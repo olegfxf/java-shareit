@@ -1,25 +1,20 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.Data;
-import ru.practicum.shareit.messages.ExceptionMessages;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 /**
  * TODO Sprint add-controllers.
  */
-@Data
+
+@Setter
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
     Long id;
-
-    @NotNull
-    @NotBlank(message = ExceptionMessages.EMPTY_NAME)
-    private String name;
-
-    @NotNull
-    @Email(message = ExceptionMessages.INCORRECT_EMAIL)
-    private String email;
+    String name;
+    String email;
 
 }

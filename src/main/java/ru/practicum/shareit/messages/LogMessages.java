@@ -3,6 +3,7 @@ package ru.practicum.shareit.messages;
 public enum LogMessages {
     TRY_ADD("Попытка добавить: {}"),
     ADD("Объект успешно добавлен: {}"),
+    TRY_PATCH("Поступил запрос на частичное обновление: {}"),
     TRY_UPDATE("Попытка обновить: {}"),
     UPDATE("Объект успешно обновлен: {}"),
     TRY_GET_OBJECT("Попытка получить объект по id: {}"),

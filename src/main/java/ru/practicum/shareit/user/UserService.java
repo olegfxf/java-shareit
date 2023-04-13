@@ -13,44 +13,44 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class UserService implements Userintr{
-    UserDao userDao;
+public class UserService {
+    UserDLAStorage userDLAStorage;
+
     @Autowired
-    public UserService(UserDao userDao) {
-        this.userDao = userDao;
+    public UserService(UserDLAStorage userDLAStorage) {
+        this.userDLAStorage = userDLAStorage;
     }
 
     public User save(User user) {
-        log.debug(String.valueOf(LogMessages.ADD), user);
-        return userDao.save(user);
+        User user1 = userDLAStorage.save(user);
+        log.debug(String.valueOf(LogMessages.ADD), user1);
+        return user1;
     }
 
     public List<User> getAll() {
-        log.debug(String.valueOf(LogMessages.GET_ALL_USERS), userDao.getALL());
-        return userDao.getALL();
+        log.debug(String.valueOf(LogMessages.GET_ALL_USERS), userDLAStorage.getALL());
+        return userDLAStorage.getALL();
     }
 
     public User getById(Long userId) {
-        if (userDao.getById(userId) == null)
+        if (userDLAStorage.getById(userId) == null)
             throw new NotFoundException(ExceptionMessages.NOT_OBJECT);
-
-        log.debug(String.valueOf(LogMessages.GET), userDao.getById(userId));
-        return userDao.getById(userId);
+        log.debug(String.valueOf(LogMessages.GET), userDLAStorage.getById(userId));
+        return userDLAStorage.getById(userId);
     }
 
 
     public User update(User user) {
-
-        log.debug(String.valueOf(LogMessages.UPDATE), user);
-        return userDao.update(user);
+        User user1 = userDLAStorage.update(user);
+        log.debug(String.valueOf(LogMessages.UPDATE), user1);
+        return user1;
     }
 
 
     public User removeById(Long userId) {
-        User user = userDao.getById(userId);
-        userDao.removeById(userId);
-
-        log.debug(String.valueOf(LogMessages.REMOVE), userId);
+        User user = userDLAStorage.getById(userId);
+        userDLAStorage.removeById(userId);
+        log.debug(String.valueOf(LogMessages.REMOVE), user);
         return user;
     }
 }

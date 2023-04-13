@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ItemService {
+public class ItemService implements ItemStorage{
     ItemDao itemDao;
 
     @Autowired

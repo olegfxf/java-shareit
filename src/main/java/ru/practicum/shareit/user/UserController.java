@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,62 +17,58 @@ import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.messages.HandlerMessages;
 import ru.practicum.shareit.messages.LogMessages;
+import ru.practicum.shareit.user.dto.UserDtoReq;
+import ru.practicum.shareit.user.dto.UserDtoRes;
 import ru.practicum.shareit.user.model.User;
-
-
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * TODO Sprint add-controllers.
  */
 @RestController
-@RequestMapping(path = "/users")
 @Slf4j
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@RequestMapping(path = "/users")
 public class UserController {
-    public UserService userService;
-    public UserDao userDao;
+    UserService userService;
+    UserDLAStorage userDao;
+    ModelMapper modelMapper = new ModelMapper();
 
     @Autowired
-    public UserController(UserService userService, UserDao userDao) {
+    public UserController(UserService userService, UserDLAStorage userDLAStorage) {
         this.userService = userService;
-        this.userDao = userDao;
+        this.userDao = userDLAStorage;
     }
 
     @PostMapping
     @ResponseBody
-    public User save(@Valid @RequestBody User user) {
+    public UserDtoRes save(@Valid @RequestBody UserDtoReq userDtoReq) {
+        User user = userDtoReq.toUser();//.modelMapper.map(userDtoReq, User.class);
         log.debug(String.valueOf(LogMessages.TRY_ADD), user);
-        User user1 = userService.save(user);
-        System.out.println(user1 + "  user1");
-        return user1;
+        return new UserDtoRes(userService.save(user));
     }
 
     @GetMapping
-    public List<User> getAll() {
+    public List<UserDtoRes> getAll() {
         log.debug(String.valueOf(LogMessages.TRY_GET_ALL), "пользователей");
-        return userService.getAll();
+        return userService.getAll().stream().map(e -> new UserDtoRes(e)).collect(Collectors.toList());
     }
 
     @GetMapping("/{userId}")
-    public User getById(@PathVariable Long userId) {
+    public UserDtoRes getById(@PathVariable Long userId) {
         log.debug(String.valueOf(LogMessages.TRY_GET_OBJECT), userId);
-        return userService.getById(userId);
+        return new UserDtoRes(userService.getById(userId));
     }
 
 
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
+    public UserDtoRes update(@Valid @RequestBody User user) {
         log.debug(String.valueOf(LogMessages.TRY_UPDATE), user);
-        return userService.update(user);
+        return new UserDtoRes(userService.update(user));
     }
-
 
 
     @DeleteMapping("/{userId}")
@@ -83,16 +82,19 @@ public class UserController {
         try {
             User user = userDao.getById(id);
             User userPatched = applyPatchToUser(patch, user);
-            userDao.getALL().stream().forEach(e-> System.out.println(e));
-            System.out.println("++++++++++++++++++++++++++++++++++++++");
-            System.out.println(user + "   user");
-            System.out.println((patch + "   patch"));
-            System.out.println(userPatched + "   userPatched");
+            log.debug(String.valueOf(LogMessages.TRY_PATCH), userPatched );
 
+//            userDao.getALL().stream().forEach(e-> System.out.println(e));
+//            System.out.println("++++++++++++++++++++++++++++++++++++++");
+//            System.out.println(user + "   user");
+//            System.out.println((patch + "   patch"));
+//            System.out.println(userPatched + "   userPatched");
 
             if (user.getName().equals(userPatched.getName()) && !user.getEmail().equals(userPatched.getEmail()))
-            userDao.getALL().stream().forEach(e -> {if (userPatched.getEmail().equals(e.getEmail()))
-                throw new ConflictException(String.valueOf(HandlerMessages.CONFLICT)); });
+                userDao.getALL().stream().forEach(e -> {
+                    if (userPatched.getEmail().equals(e.getEmail()))
+                        throw new ConflictException(String.valueOf(HandlerMessages.CONFLICT));
+                });
 
             userService.update(userPatched);
             return ResponseEntity.ok(userPatched);

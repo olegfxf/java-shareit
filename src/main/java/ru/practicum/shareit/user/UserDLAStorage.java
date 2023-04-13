@@ -14,22 +14,26 @@ import java.util.Map;
 import static java.util.stream.Collectors.toList;
 
 @Component
-public class UserDao {
+public class UserDLAStorage implements UserStorage {
     static Map<Long, User> mem = new HashMap<>();
     static Long id = 1L;
 
     public User save(User user) {
-        getALL().stream().forEach(e -> {if (user.getEmail().equals(e.getEmail()))
-                          throw new ConflictException(String.valueOf(HandlerMessages.CONFLICT)); });
+        getALL().stream().forEach(e -> {
+            if (user.getEmail().equals(e.getEmail()))
+                throw new ConflictException(String.valueOf(HandlerMessages.CONFLICT));
+        });
         user.setId(id++);
         mem.put(user.getId(), user);
         return user;
     }
 
+    @Override
     public List<User> getALL() {
         return mem.values().stream().collect(toList());
     }
 
+    @Override
     public User getById(Long id) {
         //mem.values().stream().forEach(e -> System.out.println(e + "  UserDao.getById"));
         return mem.get(id);
@@ -38,7 +42,7 @@ public class UserDao {
     public User update(User user) {
         Long id = user.getId();
         if (mem.get(id) == null)
-            throw new NotFoundException(String.valueOf(ExceptionMessages.NOT_FOUND_ID));
+            throw new NotFoundException(ExceptionMessages.NOT_FOUND_ID);
 
 //        getALL().stream().forEach(e -> {
 //            if (user.getEmail().equals(e.getEmail()))
@@ -51,8 +55,8 @@ public class UserDao {
         return user;
     }
 
-    public User removeById(Long userId) {
-        return mem.remove(userId);
+    public User removeById(Long id) {
+        return mem.remove(id);
     }
 
 
