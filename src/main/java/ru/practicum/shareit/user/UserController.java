@@ -34,13 +34,13 @@ import java.util.stream.Collectors;
 @RequestMapping(path = "/users")
 public class UserController {
     UserService userService;
-    UserDLAStorage userDao;
+    UserStorage userStorage;
     ModelMapper modelMapper = new ModelMapper();
 
     @Autowired
     public UserController(UserService userService, UserDLAStorage userDLAStorage) {
         this.userService = userService;
-        this.userDao = userDLAStorage;
+        this.userStorage = userDLAStorage;
     }
 
     @PostMapping
@@ -80,7 +80,7 @@ public class UserController {
     @PatchMapping(path = "/{id}", consumes = "application/json")
     public ResponseEntity<User> updateCustomer(@PathVariable Long id, @RequestBody JsonMergePatch patch) {
         try {
-            User user = userDao.getById(id);
+            User user = userStorage.getById(id);
             User userPatched = applyPatchToUser(patch, user);
             log.debug(String.valueOf(LogMessages.TRY_PATCH), userPatched );
 
@@ -91,7 +91,7 @@ public class UserController {
 //            System.out.println(userPatched + "   userPatched");
 
             if (user.getName().equals(userPatched.getName()) && !user.getEmail().equals(userPatched.getEmail()))
-                userDao.getALL().stream().forEach(e -> {
+                userStorage.getALL().stream().forEach(e -> {
                     if (userPatched.getEmail().equals(e.getEmail()))
                         throw new ConflictException(String.valueOf(HandlerMessages.CONFLICT));
                 });

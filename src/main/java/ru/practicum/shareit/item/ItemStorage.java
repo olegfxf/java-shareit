@@ -5,9 +5,11 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public interface ItemStorage {
-    List<Item> getAll();
     Item save(Item item);
-    Item update(Item item);
+    List<Item> getAll();
+    List<Item> getAll(Long id);
     Item getById(Long itemId);
+    Item update(Item item);
     Item removeById(Long itemId);
+
 }

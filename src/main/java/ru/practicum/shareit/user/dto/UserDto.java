@@ -10,6 +10,7 @@ import javax.validation.constraints.Positive;
 @Getter
 public enum UserDto {
     ;
+
     private interface Id {
         @Positive Long getId();
     }
@@ -25,6 +26,7 @@ public enum UserDto {
 
     public enum Request {
         ;
+
         @Value
         public static class UserDtoReq implements Name, UserDto.Email {
             String name;
@@ -34,6 +36,7 @@ public enum UserDto {
 
     public enum Response {
         ;
+
         @Value
         public static class UserDtoRes implements Id, Name, UserDto.Email {
             Long id;
