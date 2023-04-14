@@ -8,7 +8,10 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.messages.ExceptionMessages;
 import ru.practicum.shareit.messages.LogMessages;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,8 +61,17 @@ public class ItemService {
         return itemStorage.getById(itemId);
     }
 
+
     public List<Item> search(String text) {
         log.debug(String.valueOf(LogMessages.TRY_GET_SEARCH));
-        return itemStorage.getAll().stream().filter( item -> item.getName().toLowerCase().contains(text.toLowerCase())).collect(Collectors.toList());
+        Set<Item> items = new HashSet<>(itemStorage.getAll().stream().filter(item -> item.getAvailable()).filter(item ->
+                item.getName().toLowerCase().contains(text.toLowerCase())).collect(Collectors.toList()));
+        Set<Item> items1 = new HashSet<>(itemStorage.getAll().stream().filter(item -> item.getAvailable()).filter( item ->
+                item.getDescription().toLowerCase().contains(text.toLowerCase())).collect(Collectors.toList()));
+        System.out.println(items + "    items");
+        System.out.println(items1 + "    items1");
+        items.addAll(items1);
+        return new ArrayList<>(items);
     }
+
 }
