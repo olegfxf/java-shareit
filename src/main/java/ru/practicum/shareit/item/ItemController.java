@@ -21,6 +21,7 @@ import ru.practicum.shareit.messages.HandlerMessages;
 import ru.practicum.shareit.messages.LogMessages;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -105,9 +106,12 @@ public class ItemController {
 
             List<String> itemIds = headers.get("x-sharer-user-id");
 
-//            if (!itemIds.get(0).equals(item.getOwner()))
-//                throw new NotFoundException(String.valueOf(ExceptionMessages.NOT_FOUND_ID));
             System.out.println( "item.getOwner() = " + item.getOwner() + "  itemIds.get(0) = " + itemIds.get(0));
+            if (!Long.valueOf(itemIds.get(0)).equals(item.getOwner())){
+                log.debug(String.valueOf(HandlerMessages.SERVER_ERROR));
+                throw new NotFoundException(String.valueOf(ExceptionMessages.NOT_FOUND_ID));
+            }
+
 
             itemPatched.setOwner(Long.valueOf(itemIds.get(0)));
             log.debug(String.valueOf(LogMessages.TRY_PATCH), itemPatched);
@@ -132,5 +136,14 @@ public class ItemController {
             JsonMergePatch patch, Item targetCustomer) throws JsonPatchException, JsonProcessingException {
         JsonNode patched = patch.apply(new ObjectMapper().convertValue(targetCustomer, JsonNode.class));
         return new ObjectMapper().treeToValue(patched, Item.class);
+    }
+
+    @GetMapping("/search")
+    public List<Item> search(@RequestParam String text){
+        System.out.println("=======================================  " + text);
+        log.debug(String.valueOf(LogMessages.TRY_GET_SEARCH));
+        if (text.equals("")) return new ArrayList<>();
+        return itemService.search(text);
+
     }
 }

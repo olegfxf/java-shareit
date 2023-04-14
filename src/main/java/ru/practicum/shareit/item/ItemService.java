@@ -9,6 +9,7 @@ import ru.practicum.shareit.messages.ExceptionMessages;
 import ru.practicum.shareit.messages.LogMessages;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -55,5 +56,10 @@ public class ItemService {
         //System.out.println("/{userId} del");
         itemStorage.removeById(itemId);
         return itemStorage.getById(itemId);
+    }
+
+    public List<Item> search(String text) {
+        log.debug(String.valueOf(LogMessages.TRY_GET_SEARCH));
+        return itemStorage.getAll().stream().filter( item -> item.getName().toLowerCase().contains(text.toLowerCase())).collect(Collectors.toList());
     }
 }
