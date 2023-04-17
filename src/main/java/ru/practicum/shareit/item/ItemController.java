@@ -24,17 +24,12 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
 @RequestMapping("/items")
 public class ItemController {
     public ItemService itemService;
     public ItemStorage itemStorage;
-
-    static int idPatch = 1;
 
     @Autowired
     public ItemController(ItemService itemService, ItemStorage itemStorage) {
@@ -46,9 +41,10 @@ public class ItemController {
     @PostMapping
     @ResponseBody
     public ItemDtoRes save(@Valid @RequestBody ItemDtoReq itemDtoReq, @RequestHeader HttpHeaders headers) {
-        if (headers.get("x-sharer-user-id") == null){
+        if (headers.get("x-sharer-user-id") == null) {
             log.debug(String.valueOf(LogMessages.TRY_ADD), "но, к сожалению, x-sharer-user-id == null");
-            throw new InternalException(String.valueOf(HandlerMessages.ERROR_500));}
+            throw new InternalException(String.valueOf(HandlerMessages.ERROR_500));
+        }
         List<String> itemIds = headers.get("x-sharer-user-id");
         Item item = itemDtoReq.toItem();
         item.setOwner(Long.valueOf(itemIds.get(0)));
@@ -62,14 +58,12 @@ public class ItemController {
             throw new InternalException(String.valueOf(HandlerMessages.ERROR_500));
         List<String> itemIds = headers.get("x-sharer-user-id");
         log.debug(String.valueOf(LogMessages.TRY_GET_ALL), "вещей");
-        //System.out.println(itemService.getAll().size() + "  количество");
         return itemService.getAll(Long.valueOf(itemIds.get(0)));
     }
 
     @GetMapping("/{itemId}")
     public Item getById(@PathVariable Long itemId) {
         log.debug(String.valueOf(LogMessages.TRY_GET_OBJECT), itemId);
-        //System.out.println("/{userId} get");
         return itemService.getById(itemId);
     }
 
@@ -83,8 +77,7 @@ public class ItemController {
 
     @DeleteMapping("/{itemId}")
     public Item removeById(@PathVariable Long itemId) {
-        log.debug(String.valueOf(LogMessages.TRY_REMOVE), itemId);
-        System.out.println("/{itemId} del");
+        log.debug(String.valueOf(LogMessages.TRY_REMOVE_OBJECT), itemId);
         return itemService.removeById(itemId);
     }
 
@@ -93,8 +86,6 @@ public class ItemController {
     public ResponseEntity<Item> updateItem(@PathVariable Long id,
                                            @RequestBody JsonMergePatch patch,
                                            @RequestHeader HttpHeaders headers) {
-
-        System.out.println("++++++++++++++++++++++++++ Patch  " + idPatch++);
 
         if (headers.get("x-sharer-user-id") == null)
             throw new InternalException(String.valueOf(HandlerMessages.ERROR_500));
@@ -106,22 +97,14 @@ public class ItemController {
 
             List<String> itemIds = headers.get("x-sharer-user-id");
 
-            System.out.println( "item.getOwner() = " + item.getOwner() + "  itemIds.get(0) = " + itemIds.get(0));
-            if (!Long.valueOf(itemIds.get(0)).equals(item.getOwner())){
+            System.out.println("item.getOwner() = " + item.getOwner() + "  itemIds.get(0) = " + itemIds.get(0));
+            if (!Long.valueOf(itemIds.get(0)).equals(item.getOwner())) {
                 log.debug(String.valueOf(HandlerMessages.SERVER_ERROR));
-                throw new NotFoundException(String.valueOf(ExceptionMessages.NOT_FOUND_ID));
+                throw new NotFoundException(ExceptionMessages.NOT_FOUND_ID);
             }
-
 
             itemPatched.setOwner(Long.valueOf(itemIds.get(0)));
             log.debug(String.valueOf(LogMessages.TRY_PATCH), itemPatched);
-
-            //itemStorage.getAll().stream().forEach(e -> System.out.println(e));
-            System.out.println("++++++++++++++++++++++++++   ");
-            System.out.println(item + "   ITEM");
-            System.out.println((patch + "   patch"));
-            System.out.println(itemPatched + "   ITEMPatched");
-
 
             itemStorage.update(itemPatched);
             return ResponseEntity.ok(itemPatched);
@@ -139,11 +122,9 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<Item> search(@RequestParam String text){
-        System.out.println("=======================================  " + text);
-        log.debug(String.valueOf(LogMessages.TRY_GET_SEARCH));
+    public List<Item> search(@RequestParam String text) {
+        log.debug(String.valueOf(LogMessages.TRY_GET_SEARCH), text);
         if (text.equals("")) return new ArrayList<>();
         return itemService.search(text);
-
     }
 }

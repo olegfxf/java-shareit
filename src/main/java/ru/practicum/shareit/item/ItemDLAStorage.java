@@ -14,8 +14,8 @@ import static java.util.stream.Collectors.toList;
 
 @Component
 public class ItemDLAStorage implements ItemStorage {
-    static Map<Long, Item> mem = new HashMap<>();
-    static Long id = 1L;
+    private final Map<Long, Item> mem = new HashMap<>();
+    private Long id = 1L;
 
     public Item save(Item item) {
         getAll().stream().forEach(e -> {
@@ -33,8 +33,8 @@ public class ItemDLAStorage implements ItemStorage {
     }
 
     @Override
-    public List<Item> getAll(Long id){
-        List<Item> items = getAll().stream().filter(e->e.getOwner().equals(id)).collect(toList());
+    public List<Item> getAll(Long id) {
+        List<Item> items = getAll().stream().filter(e -> e.getOwner().equals(id)).collect(toList());
         return items;
     }
 
@@ -56,6 +56,10 @@ public class ItemDLAStorage implements ItemStorage {
             throw new NotFoundException(String.valueOf(ExceptionMessages.NOT_FOUND_ID));
         mem.put(id, item);
         return item;
+    }
+
+    public void removeAll() {
+        mem.clear();
     }
 
 }

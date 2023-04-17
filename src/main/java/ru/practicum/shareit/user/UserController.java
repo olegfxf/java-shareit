@@ -46,7 +46,7 @@ public class UserController {
     @PostMapping
     @ResponseBody
     public UserDtoRes save(@Valid @RequestBody UserDtoReq userDtoReq) {
-        User user = userDtoReq.toUser();//.modelMapper.map(userDtoReq, User.class);
+        User user = userDtoReq.toUser();
         log.debug(String.valueOf(LogMessages.TRY_ADD), user);
         return new UserDtoRes(userService.save(user));
     }
@@ -63,17 +63,15 @@ public class UserController {
         return new UserDtoRes(userService.getById(userId));
     }
 
-
     @PutMapping
     public UserDtoRes update(@Valid @RequestBody User user) {
         log.debug(String.valueOf(LogMessages.TRY_UPDATE), user);
         return new UserDtoRes(userService.update(user));
     }
 
-
     @DeleteMapping("/{userId}")
     public User removeById(@PathVariable Long userId) {
-        log.debug(String.valueOf(LogMessages.TRY_REMOVE), userId);
+        log.debug(String.valueOf(LogMessages.TRY_REMOVE_OBJECT), userId);
         return userService.removeById(userId);
     }
 
@@ -82,13 +80,7 @@ public class UserController {
         try {
             User user = userStorage.getById(id);
             User userPatched = applyPatchToUser(patch, user);
-            log.debug(String.valueOf(LogMessages.TRY_PATCH), userPatched );
-
-//            userDao.getALL().stream().forEach(e-> System.out.println(e));
-//            System.out.println("++++++++++++++++++++++++++++++++++++++");
-//            System.out.println(user + "   user");
-//            System.out.println((patch + "   patch"));
-//            System.out.println(userPatched + "   userPatched");
+            log.debug(String.valueOf(LogMessages.TRY_PATCH), userPatched);
 
             if (user.getName().equals(userPatched.getName()) && !user.getEmail().equals(userPatched.getEmail()))
                 userStorage.getALL().stream().forEach(e -> {

@@ -15,8 +15,8 @@ import static java.util.stream.Collectors.toList;
 
 @Component
 public class UserDLAStorage implements UserStorage {
-    static Map<Long, User> mem = new HashMap<>();
-    static Long id = 1L;
+    private final Map<Long, User> mem = new HashMap<>();
+    private Long id = 1L;
 
     public User save(User user) {
         getALL().stream().forEach(e -> {
@@ -35,7 +35,6 @@ public class UserDLAStorage implements UserStorage {
 
     @Override
     public User getById(Long id) {
-        //mem.values().stream().forEach(e -> System.out.println(e + "  UserDao.getById"));
         return mem.get(id);
     }
 
@@ -43,15 +42,7 @@ public class UserDLAStorage implements UserStorage {
         Long id = user.getId();
         if (mem.get(id) == null)
             throw new NotFoundException(ExceptionMessages.NOT_FOUND_ID);
-
-//        getALL().stream().forEach(e -> {
-//            if (user.getEmail().equals(e.getEmail()))
-//                throw new ConflictException(String.valueOf(HandlerMessages.CONFLICT));
-//        });
-
         mem.put(id, user);
-//        System.out.println("!!!!!!!!!");
-//        mem.values().stream().forEach(e -> System.out.println(e + "  UserDao"));
         return user;
     }
 
@@ -59,5 +50,8 @@ public class UserDLAStorage implements UserStorage {
         return mem.remove(id);
     }
 
+    public void removeALL() {
+        mem.clear();
+    }
 
 }

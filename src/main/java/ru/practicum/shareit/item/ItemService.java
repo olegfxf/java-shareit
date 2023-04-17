@@ -34,18 +34,14 @@ public class ItemService {
     public List<Item> getAll(Long id) {
         log.debug(String.valueOf(LogMessages.GET_ALL_USERS), itemStorage.getAll());
         return itemStorage.getAll(id);
-
     }
 
     public Item getById(Long itemId) {
         if (itemStorage.getById(itemId).equals(null))
             throw new NotFoundException(ExceptionMessages.NOT_OBJECT);
-        itemStorage.getAll().stream().forEach(e -> System.out.println(e));
-        //log.debug(String.valueOf(LogMessages.ADD), userId);
         log.debug(String.valueOf(LogMessages.GET), itemStorage.getById(itemId));
         return itemStorage.getById(itemId);
     }
-
 
     public Item update(Item item) {
         Item item1 = itemStorage.update(item);
@@ -53,23 +49,18 @@ public class ItemService {
         return item1;
     }
 
-
     public Item removeById(Long itemId) {
+        Item item = itemStorage.removeById(itemId);
         log.debug(String.valueOf(LogMessages.REMOVE), itemId);
-        //System.out.println("/{userId} del");
-        itemStorage.removeById(itemId);
-        return itemStorage.getById(itemId);
+        return item;
     }
-
 
     public List<Item> search(String text) {
         log.debug(String.valueOf(LogMessages.TRY_GET_SEARCH));
         Set<Item> items = new HashSet<>(itemStorage.getAll().stream().filter(item -> item.getAvailable()).filter(item ->
                 item.getName().toLowerCase().contains(text.toLowerCase())).collect(Collectors.toList()));
-        Set<Item> items1 = new HashSet<>(itemStorage.getAll().stream().filter(item -> item.getAvailable()).filter( item ->
+        Set<Item> items1 = new HashSet<>(itemStorage.getAll().stream().filter(item -> item.getAvailable()).filter(item ->
                 item.getDescription().toLowerCase().contains(text.toLowerCase())).collect(Collectors.toList()));
-        System.out.println(items + "    items");
-        System.out.println(items1 + "    items1");
         items.addAll(items1);
         return new ArrayList<>(items);
     }

@@ -11,5 +11,5 @@ public interface ItemStorage {
     Item getById(Long itemId);
     Item update(Item item);
     Item removeById(Long itemId);
-
+    void removeAll();
 }

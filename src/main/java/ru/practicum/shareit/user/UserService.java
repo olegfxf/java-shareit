@@ -39,17 +39,14 @@ public class UserService {
         return userStorage.getById(userId);
     }
 
-
     public User update(User user) {
         User user1 = userStorage.update(user);
         log.debug(String.valueOf(LogMessages.UPDATE), user1);
         return user1;
     }
 
-
     public User removeById(Long userId) {
-        User user = userStorage.getById(userId);
-        userStorage.removeById(userId);
+        User user = userStorage.removeById(userId);
         log.debug(String.valueOf(LogMessages.REMOVE), user);
         return user;
     }
