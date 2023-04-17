@@ -20,7 +20,9 @@ public enum UserDto {
     }
 
     private interface Email {
-        @NotNull @javax.validation.constraints.Email String getEmail();
+        @NotNull
+        @javax.validation.constraints.Email
+        String getEmail();
     }
 
 
