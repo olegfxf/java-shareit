@@ -14,7 +14,6 @@ public enum LogMessages {
     GET_ALL_USERS("Предоставлен список: {}"),
     TRY_GET_SEARCH("Попытка поиска items by = {}.");
 
-
     private final String textLog;
 
     LogMessages(String textLog) {
