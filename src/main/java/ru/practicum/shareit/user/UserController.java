@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.abstracts.AbstractDLAStorage;
+import ru.practicum.shareit.abstracts.AbstractStorage;
 import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.messages.HandlerMessages;
@@ -25,20 +27,18 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * TODO Sprint add-controllers.
- */
+
 @RestController
 @Slf4j
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequestMapping(path = "/users")
 public class UserController {
     UserService userService;
-    UserStorage userStorage;
+    AbstractStorage<User> userStorage;
     ModelMapper modelMapper = new ModelMapper();
 
     @Autowired
-    public UserController(UserService userService, UserDLAStorage userDLAStorage) {
+    public UserController(UserService userService, AbstractDLAStorage<User> userDLAStorage) {
         this.userService = userService;
         this.userStorage = userDLAStorage;
     }

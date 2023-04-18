@@ -12,6 +12,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.abstracts.AbstractDLAStorage;
+import ru.practicum.shareit.abstracts.AbstractStorage;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDtoReq;
 import ru.practicum.shareit.item.dto.ItemDtoRes;
@@ -29,12 +31,12 @@ import java.util.List;
 @RequestMapping("/items")
 public class ItemController {
     public ItemService itemService;
-    public ItemStorage itemStorage;
+    AbstractStorage<Item> itemStorage;
 
     @Autowired
-    public ItemController(ItemService itemService, ItemStorage itemStorage) {
+    public ItemController(ItemService itemService, AbstractDLAStorage<Item> itemDLAStorage) {
         this.itemService = itemService;
-        this.itemStorage = itemStorage;
+        this.itemStorage = itemDLAStorage;
     }
 
 
@@ -97,7 +99,6 @@ public class ItemController {
 
             List<String> itemIds = headers.get("x-sharer-user-id");
 
-            System.out.println("item.getOwner() = " + item.getOwner() + "  itemIds.get(0) = " + itemIds.get(0));
             if (!Long.valueOf(itemIds.get(0)).equals(item.getOwner())) {
                 log.debug(String.valueOf(HandlerMessages.SERVER_ERROR));
                 throw new NotFoundException(ExceptionMessages.NOT_FOUND_ID);

@@ -26,7 +26,7 @@ class ItemDLAStorageTest {
         item.setOwner(1L);
         item.setRequest("request");
 
-        itemDLAStorage.removeAll();
+        itemDLAStorage.removeALL();
     }
 
     @Test
@@ -38,13 +38,13 @@ class ItemDLAStorageTest {
     @Test
     void shouldGetAll() {
         itemDLAStorage.save(item);
-        assertEquals(1, itemDLAStorage.getAll().size());
+        assertEquals(1, itemDLAStorage.getALL().size());
     }
 
     @Test
     void shouldSGetAllById() {
         itemDLAStorage.save(item);
-        assertEquals(1, itemDLAStorage.getAll().size());
+        assertEquals(1, itemDLAStorage.getALL().size());
     }
 
     @Test
@@ -57,7 +57,7 @@ class ItemDLAStorageTest {
     void shouldRemoveById() {
         Item item1 = itemDLAStorage.save(item);
         itemDLAStorage.removeById(item1.getId());
-        assertEquals(0, itemDLAStorage.getAll().size());
+        assertEquals(0, itemDLAStorage.getALL().size());
     }
 
     @Test

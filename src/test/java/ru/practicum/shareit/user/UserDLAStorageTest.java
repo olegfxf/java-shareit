@@ -4,17 +4,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.practicum.shareit.abstracts.AbstractDLAStorage;
 import ru.practicum.shareit.user.model.User;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-class UserDLAStorageTest {
-    UserStorage userStorage;
+class UserDLAStorageTest{
+    AbstractDLAStorage<User> userStorage;
     User user = new User();
 
     @Autowired
-    public UserDLAStorageTest(UserStorage userStorage) {
+    public UserDLAStorageTest(AbstractDLAStorage <User> userStorage) {
         this.userStorage = userStorage;
     }
 
