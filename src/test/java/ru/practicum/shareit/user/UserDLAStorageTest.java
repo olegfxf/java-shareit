@@ -10,12 +10,12 @@ import ru.practicum.shareit.user.model.User;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-class UserDLAStorageTest{
+class UserDLAStorageTest {
     AbstractDLAStorage<User> userStorage;
     User user = new User();
 
     @Autowired
-    public UserDLAStorageTest(AbstractDLAStorage <User> userStorage) {
+    public UserDLAStorageTest(AbstractDLAStorage<User> userStorage) {
         this.userStorage = userStorage;
     }
 
