@@ -30,8 +30,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/items")
 public class ItemController {
-    public ItemService itemService;
-    AbstractStorage<Item> itemStorage;
+    private final ItemService itemService;
+    private final AbstractStorage<Item> itemStorage;
 
     @Autowired
     public ItemController(ItemService itemService, AbstractDLAStorage<Item> itemDLAStorage) {
