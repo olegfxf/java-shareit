@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.user.model;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,10 +11,7 @@ import ru.practicum.shareit.abstracts.AbstractModel;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
-public class Item extends AbstractModel {
+public class User extends AbstractModel {
     String name;
-    String description;
-    Boolean available;
-    Long owner;
-    String request;
+    String email;
 }
