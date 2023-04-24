@@ -22,18 +22,18 @@ public class ItemService extends AbstractService<Item, AbstractStorage<Item>> {
         super(itemDLAStorage);
     }
 
-    @Override
-    public Item save(Item item) {
-        Item item1 = abstractStorage.save(item);
-        log.debug(String.valueOf(LogMessages.ADD), item);
-        return item1;
-    }
+//    @Override
+//    public Item save(Item item) {
+//        Item item1 = abstractStorage.save(item);
+//        log.debug(String.valueOf(LogMessages.ADD), item);
+//        return item1;
+//    }
 
-    @Override
-    public List<Item> getAll(Long id) {
-        log.debug(String.valueOf(LogMessages.GET_ALL_USERS), abstractStorage.getALL());
-        return abstractStorage.getAll(id);
-    }
+//    @Override
+//    public List<Item> getAll(Long id) {
+//        log.debug(String.valueOf(LogMessages.GET_ALL_USERS), abstractStorage.getALL());
+//        return abstractStorage.getAll(id);
+//    }
 
     public List<Item> search(String text) {
         log.debug(String.valueOf(LogMessages.TRY_GET_SEARCH));

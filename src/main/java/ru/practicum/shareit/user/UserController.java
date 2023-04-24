@@ -45,7 +45,7 @@ public class UserController {
 
     @PostMapping
     @ResponseBody
-    public UserDtoRes save(@Valid @RequestBody UserDtoReq userDtoReq) {
+    public UserDtoRes save(@RequestBody @Valid UserDtoReq userDtoReq) {
         User user = userDtoReq.toUser();
         log.debug(String.valueOf(LogMessages.TRY_ADD), user);
         return new UserDtoRes(userService.save(user));

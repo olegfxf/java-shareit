@@ -18,7 +18,9 @@ public abstract class AbstractDLAStorage<E extends AbstractModel> implements Abs
 
     @Override
     public E save(Object obj) {
-        return null;
+        ((E) obj).setId(id++);
+        mem.put(((E) obj).getId(), (E) obj);
+        return (E) obj;
     }
 
     @Override

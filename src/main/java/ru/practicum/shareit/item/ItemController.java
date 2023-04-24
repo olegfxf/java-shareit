@@ -5,12 +5,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import com.sun.jdi.InternalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.abstracts.AbstractDLAStorage;
 import ru.practicum.shareit.abstracts.AbstractStorage;
@@ -21,46 +20,70 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.messages.ExceptionMessages;
 import ru.practicum.shareit.messages.HandlerMessages;
 import ru.practicum.shareit.messages.LogMessages;
+import ru.practicum.shareit.user.model.User;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/items")
 public class ItemController {
-    private final ItemService itemService;
-    private final AbstractStorage<Item> itemStorage;
+    ItemService itemService;
+    AbstractStorage<Item> itemStorage;
+    AbstractStorage<User> userStorage;
 
     @Autowired
-    public ItemController(ItemService itemService, AbstractDLAStorage<Item> itemDLAStorage) {
+    public ItemController(ItemService itemService,
+                          AbstractDLAStorage<Item> itemDLAStorage,
+                          AbstractDLAStorage<User> userStorage) {
         this.itemService = itemService;
         this.itemStorage = itemDLAStorage;
+        this.userStorage = userStorage;
     }
 
 
     @PostMapping
     @ResponseBody
-    public ItemDtoRes save(@Valid @RequestBody ItemDtoReq itemDtoReq, @RequestHeader HttpHeaders headers) {
-        if (headers.get("x-sharer-user-id") == null) {
-            log.debug(String.valueOf(LogMessages.TRY_ADD), "но, к сожалению, x-sharer-user-id == null");
-            throw new InternalException(String.valueOf(HandlerMessages.ERROR_500));
+    public ItemDtoRes save(@Valid @RequestBody ItemDtoReq itemDtoReq,
+                           @RequestHeader("x-sharer-user-id") @NotEmpty String ownerId) {
+
+//        System.out.println(optionalHeader.isPresent() ? "Yes" : "_No");
+
+//        if (!optionalHeader.isPresent())
+//            throw new InternalException(String.valueOf(HandlerMessages.ERROR_500));
+
+//        final Long ownerId = Long.valueOf(optionalHeader.get());
+//        System.out.println(ownerId);
+
+        if (!userStorage.getALL().stream().anyMatch(e -> Long.valueOf(ownerId).equals(e.getId()))) {
+//            System.out.println("^^^");
+            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
         }
-        List<String> itemIds = headers.get("x-sharer-user-id");
+
+
+        if (itemStorage.getALL().stream().anyMatch(e -> itemDtoReq.getName().equals(e.getName())))
+            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+        //throw new ConflictException(String.valueOf(HandlerMessages.CONFLICT));
+
+
         Item item = itemDtoReq.toItem();
-        item.setOwner(Long.valueOf(itemIds.get(0)));
+        item.setOwner(Long.valueOf(ownerId));
         log.debug(String.valueOf(LogMessages.TRY_ADD), item);
         return new ItemDtoRes(itemService.save(item));
+
     }
 
     @GetMapping
-    public List<Item> getAll(@RequestHeader HttpHeaders headers) {
-        if (headers.get("x-sharer-user-id") == null)
-            throw new InternalException(String.valueOf(HandlerMessages.ERROR_500));
-        List<String> itemIds = headers.get("x-sharer-user-id");
+    public List<Item> getAll(@RequestHeader("x-sharer-user-id") @NotEmpty String ownerId) {
+//        if (headers.get("x-sharer-user-id") == null)
+//            throw new InternalException(String.valueOf(HandlerMessages.ERROR_500));
+//        List<String> itemIds = headers.get("x-sharer-user-id");
         log.debug(String.valueOf(LogMessages.TRY_GET_ALL), "вещей");
-        return itemService.getAll(Long.valueOf(itemIds.get(0)));
+        return itemService.getAll(Long.valueOf(ownerId));
     }
 
     @GetMapping("/{itemId}")
@@ -87,24 +110,24 @@ public class ItemController {
     @PatchMapping(path = "/{id}", consumes = "application/json")
     public ResponseEntity<Item> updateItem(@PathVariable Long id,
                                            @RequestBody JsonMergePatch patch,
-                                           @RequestHeader HttpHeaders headers) {
+                                           @RequestHeader("x-sharer-user-id") @NotEmpty String ownerId) {
 
-        if (headers.get("x-sharer-user-id") == null)
-            throw new InternalException(String.valueOf(HandlerMessages.ERROR_500));
+//        if (headers.get("x-sharer-user-id") == null)
+//            throw new InternalException(String.valueOf(HandlerMessages.ERROR_500));
 
 
         try {
             Item item = itemStorage.getById(id);
             Item itemPatched = applyPatchToItem(patch, item);
 
-            List<String> itemIds = headers.get("x-sharer-user-id");
+            //           List<String> itemIds = headers.get("x-sharer-user-id");
 
-            if (!Long.valueOf(itemIds.get(0)).equals(item.getOwner())) {
+            if (!Long.valueOf(ownerId).equals(item.getOwner())) {
                 log.debug(String.valueOf(HandlerMessages.SERVER_ERROR));
                 throw new NotFoundException(ExceptionMessages.NOT_FOUND_ID);
             }
 
-            itemPatched.setOwner(Long.valueOf(itemIds.get(0)));
+            itemPatched.setOwner(Long.valueOf(ownerId));
             log.debug(String.valueOf(LogMessages.TRY_PATCH), itemPatched);
 
             itemStorage.update(itemPatched);

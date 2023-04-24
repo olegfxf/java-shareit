@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.constraints.AllForEmail;
 import ru.practicum.shareit.messages.ExceptionMessages;
 import ru.practicum.shareit.user.model.User;
 
@@ -18,8 +19,10 @@ public class UserDtoReq {
     @NotNull
     @NotBlank(message = ExceptionMessages.EMPTY_NAME)
     String name;
+
     @NotNull
     @Email(message = ExceptionMessages.INCORRECT_EMAIL)
+    @AllForEmail(message = "Такой email уже существует")
     String email;
 
     public User toUser() {
