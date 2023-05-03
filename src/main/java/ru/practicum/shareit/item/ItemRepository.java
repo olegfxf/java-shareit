@@ -11,6 +11,7 @@ import java.util.List;
 
 @Repository
 public interface ItemRepository extends CommonRepository<Item>, QuerydslPredicateExecutor<Item> {
+
     @Query(" SELECT DISTINCT it FROM ru.practicum.shareit.item.model.Item AS it " +
             " WHERE upper(it.name)        LIKE upper(concat('%', ?1, '%')) " +
             " OR    upper(it.description) LIKE upper(concat('%', ?1, '%')) AND it.available = true")
