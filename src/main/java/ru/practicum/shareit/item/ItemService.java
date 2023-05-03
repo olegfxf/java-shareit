@@ -92,7 +92,7 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         if (bookingRepository.findByBookerAndItemAndEndBefore(user, item, LocalDateTime.now()).isEmpty())
             throw new ValidationException(String.valueOf((HandlerMessages.VALID)));
 
-        if (item.getOwner().getId() == userId) {
+        if (item.getOwner().getId().equals(userId)) {
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
         }
 
