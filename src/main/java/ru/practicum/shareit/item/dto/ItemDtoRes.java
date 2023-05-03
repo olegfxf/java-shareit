@@ -4,33 +4,31 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.messages.ExceptionMessages;
+import ru.practicum.shareit.booking.dto.SmallBooking;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import java.util.List;
+import java.util.Optional;
 
 @Setter
 @Getter
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemDtoRes {
-    @Positive
     long id;
-    @NotNull
-    @NotBlank(message = ExceptionMessages.EMPTY_NAME)
-    String name;
-    String description;
-    Boolean available;
-    Long owner;
-    String request;
 
-    public ItemDtoRes(Item item) {
-        this.id = item.getId();
-        this.name = item.getName();
-        this.description = item.getDescription();
-        this.available = item.getAvailable();
-        this.owner = item.getOwner();
-        this.request = item.getRequest();
-    }
+    String name;
+
+    String description;
+
+    Boolean available;
+
+    Long ownerId;
+
+    Long request;
+
+    Optional<SmallBooking> lastBooking;
+
+    Optional<SmallBooking> nextBooking;
+
+    List<CommentDtoRes> comments;
+
 }
