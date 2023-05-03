@@ -97,7 +97,7 @@ public class BookingService extends AbstractServiceImpl<Booking, BookingReposito
                 new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND)));
         Item item = booking.getItem();
 
-        if (!userId.equals(item.getOwner().getId())) // владелец вещи не может ее бронировать
+        if (!userId.equals(item.getOwner().getId()))
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
 
         if (booking.getStatus() == Status.APPROVED)

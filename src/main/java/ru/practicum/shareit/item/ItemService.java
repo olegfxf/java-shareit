@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.abstracts.AbstractServiceImpl;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.SmallBooking;
-import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDtoRes;
@@ -93,9 +92,6 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         if (bookingRepository.findByBookerAndItemAndEndBefore(user, item, LocalDateTime.now()).isEmpty())
             throw new ValidationException(String.valueOf((HandlerMessages.VALID)));
 
-//        System.out.println(item);
-//        System.out.println(user);
-//        System.out.println(userId + "  uuu " + item.getOwner().getId());
         if (item.getOwner().getId() == userId) {
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
         }

@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,7 +11,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends CommonRepository<Booking> {
@@ -88,14 +86,6 @@ public interface BookingRepository extends CommonRepository<Booking> {
     List<Booking> currentTimeOwner(@Param("ownerId") Long ownerId, @Param("now") LocalDateTime now);
 
 
-    //Booking findFirstByItemOrderByEndDesc(Item item);
-
-    //Booking findFirstByItemOrderByStartAsc(Item item);
-
-    //Optional<Booking> findFirstByItemIdAndEndBeforeOrderByEndDesc(Long itemId, LocalDateTime date);
-
-    //Optional<Booking> findFirstByItemIdAndStartAfterOrderByStart(Long itemId, LocalDateTime date);
-
     @Query(value = "SELECT * FROM Bookings AS b " +
             " INNER JOIN Items AS i ON b.item_id = i.id " +
             " WHERE b.start_date < :now " +
@@ -115,12 +105,9 @@ public interface BookingRepository extends CommonRepository<Booking> {
             " ORDER BY b.start_date ASC limit 1", nativeQuery = true)
     Booking findBookingsNext(@Param("ids") Long ids, @Param("now") LocalDateTime now, @Param("userId") Long userId);
 
-  //  Booking findFirstByBookerAndItem(User user, Item item);
-
     boolean existsBookingByBookerAndItemAndStatus(User user, Item item, Status status);
 
     List<Booking> findByBookerAndItemAndEndBefore(User booker, Item item, LocalDateTime end);
-
 
 
 }

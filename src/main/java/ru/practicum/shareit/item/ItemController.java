@@ -15,7 +15,6 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.SmallBooking;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.messages.ExceptionMessages;
 import ru.practicum.shareit.messages.HandlerMessages;
@@ -73,7 +72,6 @@ public class ItemController {
 
         if (itemService.getAll().stream().anyMatch(e -> itemDtoReq.getName().equals(e.getName())))
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-        //throw new ConflictException(String.valueOf(HandlerMessages.CONFLICT));
 
 
         Item item = itemMapper.toItem(itemDtoReq, Long.valueOf(ownerId));
@@ -154,8 +152,8 @@ public class ItemController {
     @PostMapping("{itemId}/comment")
     @ResponseBody
     public CommentDtoRes addComment(@Valid @RequestBody CommentDtoReq commentDtoReq,
-                           @RequestHeader("x-sharer-user-id") @NotEmpty String userId,
-                           @PathVariable Long itemId) {
+                                    @RequestHeader("x-sharer-user-id") @NotEmpty String userId,
+                                    @PathVariable Long itemId) {
 
         System.out.println("@@@@1 " + commentDtoReq.getText());
         return commentMapper.toCommentDtoRes(itemService.addComment(commentMapper.toComment(commentDtoReq), itemId, Long.valueOf(userId)));
