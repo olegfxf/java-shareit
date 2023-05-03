@@ -58,7 +58,7 @@ public class BookingService extends AbstractServiceImpl<Booking, BookingReposito
         User booker = userService.getById(bookerId);
         Item item = itemService.getById(booking.getItem().getId());
 
-        if (!item.getAvailable())
+        if (!item.getAvailable()) // проверка доступности вещи
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
 
         dateValidation(booking, item);
@@ -97,7 +97,7 @@ public class BookingService extends AbstractServiceImpl<Booking, BookingReposito
                 new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND)));
         Item item = booking.getItem();
 
-        if (!userId.equals(item.getOwner().getId()))
+        if (!userId.equals(item.getOwner().getId())) // владелец вещи не может ее бронировать
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
 
         if (booking.getStatus() == Status.APPROVED)

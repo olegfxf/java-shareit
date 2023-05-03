@@ -4,19 +4,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.practicum.shareit.abstracts.AbstractDLAStorage;
 import ru.practicum.shareit.user.model.User;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class UserDLAStorageTest {
-    AbstractDLAStorage<User> userStorage;
+
+    UserService userService;
     User user = new User();
 
     @Autowired
-    public UserDLAStorageTest(AbstractDLAStorage<User> userStorage) {
-        this.userStorage = userStorage;
+    public UserDLAStorageTest(UserService userService) {
+        this.userService = userService;
     }
 
     @BeforeEach
@@ -24,40 +24,40 @@ class UserDLAStorageTest {
         user.setName("name");
         user.setEmail("name@mail.ru");
 
-        userStorage.removeALL();
+        userService.removeALL();
     }
 
     @Test
     void shouldSave() {
-        User user1 = userStorage.save(user);
-        assertEquals("name", userStorage.getById(user1.getId()).getName());
+        User user1 = userService.save(user);
+        assertEquals("name", userService.getById(user1.getId()).getName());
     }
 
     @Test
     void shouldGetALL() {
-        userStorage.save(user);
-        assertEquals(1, userStorage.getALL().size());
+        userService.save(user);
+        assertEquals(1, userService.getAll().size());
     }
 
     @Test
     void shouldGetById() {
-        User user1 = userStorage.save(user);
-        assertEquals("name", userStorage.getById(user1.getId()).getName());
+        User user1 = userService.save(user);
+        assertEquals("name", userService.getById(user1.getId()).getName());
     }
 
     @Test
     void shouldUpdate() {
-        User user1 = userStorage.save(user);
+        User user1 = userService.save(user);
         user.setName("name1");
-        userStorage.update(user);
-        assertEquals("name1", userStorage.getById(user1.getId()).getName());
+        userService.update(user);
+        assertEquals("name1", userService.getById(user1.getId()).getName());
     }
 
     @Test
     void shouldRemoveById() {
-        User user1 = userStorage.save(user);
-        userStorage.removeById(user1.getId());
-        assertEquals(0, userStorage.getALL().size());
+        User user1 = userService.save(user);
+        userService.removeById(user1.getId());
+        assertEquals(0, userService.getAll().size());
     }
 
 }

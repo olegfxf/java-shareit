@@ -77,10 +77,15 @@ public class BookingController {
     @ResponseBody
     public List<BookingDtoRes> getAll(@RequestHeader("x-sharer-user-id") Long userId,
                                       @RequestParam(defaultValue = "ALL", required = false) String state) {
+//        if (state == null)
+//            throw new InternalException(String.valueOf(HandlerMessages.SERVER_ERROR));
         log.debug(String.valueOf(LogMessages.TRY_GET_ALL), "бронирований");
 
 
         List<Booking> bookings = bookingService.getAll1(userId, state);
+//        if (bookings == null)
+//            throw new InternalException(String.valueOf(HandlerMessages.SERVER_ERROR));
+//        System.out.println(bookings + " %%% " + bookings.size());
         List<BookingDtoRes> bookingDtoRes = bookings.stream()
                 .map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
 

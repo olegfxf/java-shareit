@@ -6,15 +6,31 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.abstracts.AbstractModel;
+import ru.practicum.shareit.user.model.User;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
 
 @Setter
 @Getter
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Entity(name = "items")
 public class Item extends AbstractModel {
     String name;
+
     String description;
+
+    @Column(name = "is_available")
     Boolean available;
-    Long owner;
-    String request;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    User owner;
+
+    @Column(name = "request_id")
+    Long requestId;
 }

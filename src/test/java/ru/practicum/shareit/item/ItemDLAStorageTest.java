@@ -10,12 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class ItemDLAStorageTest {
-    ItemDLAStorage itemDLAStorage;
+    ItemService itemService;
     Item item = new Item();
 
     @Autowired
-    public ItemDLAStorageTest(ItemDLAStorage itemDLAStorage) {
-        this.itemDLAStorage = itemDLAStorage;
+    public ItemDLAStorageTest(ItemService itemService) {
+        this.itemService = itemService;
     }
 
     @BeforeEach
@@ -23,49 +23,49 @@ class ItemDLAStorageTest {
         item.setName("name");
         item.setDescription("description");
         item.setAvailable(true);
-        item.setOwner(1L);
-        item.setRequest("request");
+        item.setOwnerId(1L);
+        item.setRequestId(10L);
 
-        itemDLAStorage.removeALL();
+        itemService.removeALL();
     }
 
     @Test
     void shouldSave() {
-        Item item1 = itemDLAStorage.save(item);
-        assertEquals("name", itemDLAStorage.getById(item1.getId()).getName());
+        Item item1 = itemService.save(item);
+        assertEquals("name", itemService.getById(item1.getId()).getName());
     }
 
     @Test
     void shouldGetAll() {
-        itemDLAStorage.save(item);
-        assertEquals(1, itemDLAStorage.getALL().size());
+        itemService.save(item);
+        assertEquals(1, itemService.getAll().size());
     }
 
     @Test
     void shouldSGetAllById() {
-        itemDLAStorage.save(item);
-        assertEquals(1, itemDLAStorage.getALL().size());
+        itemService.save(item);
+        assertEquals(1, itemService.getAll().size());
     }
 
     @Test
     void shouldGetById() {
-        Item item1 = itemDLAStorage.save(item);
-        assertEquals("name", itemDLAStorage.getById(item1.getId()).getName());
+        Item item1 = itemService.save(item);
+        assertEquals("name", itemService.getById(item1.getId()).getName());
     }
 
     @Test
     void shouldRemoveById() {
-        Item item1 = itemDLAStorage.save(item);
-        itemDLAStorage.removeById(item1.getId());
-        assertEquals(0, itemDLAStorage.getALL().size());
+        Item item1 = itemService.save(item);
+        itemService.removeById(item1.getId());
+        assertEquals(0, itemService.getAll().size());
     }
 
     @Test
     void shouldUpdate() {
-        Item item1 = itemDLAStorage.save(item);
+        Item item1 = itemService.save(item);
         item.setName("name1");
-        itemDLAStorage.update(item);
-        assertEquals("name1", itemDLAStorage.getById(item1.getId()).getName());
+        itemService.update(item);
+        assertEquals("name1", itemService.getById(item1.getId()).getName());
     }
 
 }

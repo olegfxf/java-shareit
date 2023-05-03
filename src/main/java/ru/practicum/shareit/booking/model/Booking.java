@@ -29,11 +29,11 @@ public class Booking extends AbstractModel {
     LocalDateTime end;
 
     @ManyToOne
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = " item_id")
     Item item;
 
     @ManyToOne
-    @JoinColumn(name = "booker_id")
+    @JoinColumn(name = " booker_id")
     User booker;
 
     @Column(name = "status")

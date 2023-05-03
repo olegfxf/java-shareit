@@ -4,11 +4,14 @@ import jdk.jshell.spi.ExecutionControl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.messages.HandlerMessages;
 
 import java.util.Map;
+
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @RestControllerAdvice
 @Slf4j
@@ -34,11 +37,18 @@ public class ErrorsHandler {
         return Map.of(String.valueOf(HandlerMessages.CONFLICT), e.getMessage());
     }
 
-
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
     public Map<String, String> handlerInternalException(final ExecutionControl.InternalException e) {
         log.info(String.valueOf(HandlerMessages.ERROR_500), e.getMessage());
         return Map.of(String.valueOf(HandlerMessages.SERVER_ERROR), e.getMessage());
+    }
+
+    @ExceptionHandler(value = {UnexpectedErrorException.class, IllegalArgumentException.class})
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public Map<String, Object> internalErrorResponseExceptionHandler(UnexpectedErrorException e) {
+        log.info(String.valueOf((HandlerMessages.UNEXPECTED_ERROR)));
+        return Map.of("error", "Unknown state: UNSUPPORTED_STATUS");
     }
 }
