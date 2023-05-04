@@ -96,16 +96,16 @@ public class ItemController {
 
 
     @PutMapping
-    public Item update(@Valid @RequestBody Item item) {
+    public ItemDtoRes update(@Valid @RequestBody Item item) {
         log.debug(String.valueOf(LogMessages.TRY_UPDATE), item);
-        return itemService.update(item);
+        return itemMapper.toItemDtoRes(itemService.update(item));
     }
 
 
     @DeleteMapping("/{itemId}")
-    public Item removeById(@PathVariable Long itemId) {
+    public ItemDtoRes removeById(@PathVariable Long itemId) {
         log.debug(String.valueOf(LogMessages.TRY_REMOVE_OBJECT), itemId);
-        return itemService.removeById(itemId);
+        return itemMapper.toItemDtoRes(itemService.removeById(itemId));
     }
 
 
@@ -143,10 +143,10 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<Item> search(@RequestParam String text) {
+    public List<ItemDtoRes> search(@RequestParam String text) {
         log.debug(String.valueOf(LogMessages.TRY_GET_SEARCH), text);
         if (text.isEmpty()) return new ArrayList<>();
-        return itemService.search(text);
+        return itemService.searchText(text);
     }
 
     @PostMapping("{itemId}/comment")
@@ -154,8 +154,6 @@ public class ItemController {
     public CommentDtoRes addComment(@Valid @RequestBody CommentDtoReq commentDtoReq,
                                     @RequestHeader("x-sharer-user-id") @NotEmpty String userId,
                                     @PathVariable Long itemId) {
-
-        System.out.println("@@@@1 " + commentDtoReq.getText());
         return commentMapper.toCommentDtoRes(itemService.addComment(commentMapper.toComment(commentDtoReq), itemId, Long.valueOf(userId)));
     }
 }

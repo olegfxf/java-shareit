@@ -59,9 +59,10 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         return itemDtoRes;
     }
 
-    public List<Item> search(String text) {
+    public List<ItemDtoRes> searchText(String text) {
+        List<Item> items = itemRepository.search(text);
         log.debug(String.valueOf(LogMessages.TRY_GET_SEARCH));
-        return itemRepository.search(text);
+        return items.stream().map(e -> itemMapper.toItemDtoRes(e)).collect(toList());
     }
 
     public ItemDtoRes getById(Long itemId, Long userId) {

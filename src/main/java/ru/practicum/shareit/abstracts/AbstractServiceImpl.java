@@ -49,10 +49,8 @@ public abstract class AbstractServiceImpl<E extends AbstractModel, R extends Com
 
     public E getById(Long objId) {
         if (!repository.findById(objId).isPresent())
-            //throw new InternalException(String.valueOf(HandlerMessages.ERROR_500));
             throw new NotFoundException(ExceptionMessages.NOT_OBJECT);
 
-        //System.out.println(repository.findById(objId) + " &&& " + objId);
         log.debug(String.valueOf(LogMessages.GET), repository.findById(objId));
         return repository.findById(objId).get();
     }
