@@ -1,16 +1,18 @@
 package ru.practicum.shareit.booking;
 
 import com.sun.jdi.InternalException;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.abstracts.AbstractServiceImpl;
+import ru.practicum.shareit.booking.dto.BookingDtoRes;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.UnexpectedErrorException;
 import ru.practicum.shareit.exceptions.ValidationException;
-import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.messages.HandlerMessages;
@@ -21,40 +23,27 @@ import ru.practicum.shareit.user.model.User;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Transactional
 @Slf4j
 @Service
-public class BookingService extends AbstractServiceImpl<Booking, BookingRepository> {
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
+public class BookingService {
 
     ItemService itemService;
     UserService userService;
     UserRepository userRepository;
-    ItemRepository itemRepository;
     BookingRepository bookingRepository;
-    State state;
-
-    @Autowired
-    public BookingService(
-            UserRepository userRepository,
-            ItemRepository itemRepository,
-            BookingRepository bookingRepository,
-            ItemService itemService,
-            UserService userService) {
-        super(bookingRepository);
-        this.userRepository = userRepository;
-        this.itemRepository = itemRepository;
-        this.bookingRepository = bookingRepository;
-        this.itemService = itemService;
-        this.userService = userService;
-    }
 
 
     @Transactional
-    public Booking save(Long bookerId, Booking booking) {
+    public BookingDtoRes save(Long bookerId, Booking booking) {
         User booker = userService.getById(bookerId);
         Item item = itemService.getById(booking.getItem().getId());
 
@@ -71,7 +60,7 @@ public class BookingService extends AbstractServiceImpl<Booking, BookingReposito
         booking.setStatus(Status.WAITING);
         log.debug(String.valueOf(LogMessages.TRY_ADD), booking);
 
-        return bookingRepository.save(booking);
+        return BookingMapper.toBookingDtoRes(bookingRepository.save(booking));
     }
 
 
@@ -91,7 +80,7 @@ public class BookingService extends AbstractServiceImpl<Booking, BookingReposito
 
 
     @Transactional
-    public Booking approveIt(Long bookingId, Long userId, boolean approved) {
+    public BookingDtoRes approveIt(Long bookingId, Long userId, boolean approved) {
 
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
                 new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND)));
@@ -105,43 +94,49 @@ public class BookingService extends AbstractServiceImpl<Booking, BookingReposito
 
         booking.setStatus(approved ? Status.APPROVED : Status.REJECTED);
         log.debug(String.valueOf(LogMessages.UPDATE));
-        return bookingRepository.save(booking);
+        return BookingMapper.toBookingDtoRes(bookingRepository.save(booking));
     }
 
-    public Booking getById(Long bookingId, Long userId) {
+    public BookingDtoRes getById(Long bookingId, Long userId) {
         Booking booking = bookingRepository.findBookingByIdAndBookerOrOwner(bookingId, userId);
         if (booking == null)
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
 
-        return bookingRepository.findBookingByIdAndBookerOrOwner(bookingId, userId);
+        return BookingMapper.toBookingDtoRes(bookingRepository.findBookingByIdAndBookerOrOwner(bookingId, userId));
     }
 
     @Transactional
-    public List<Booking> getAll1(Long userId, String state) {
+    public List<BookingDtoRes> getAll(Long userId, String state) {
         Optional<State> checkState = Stream.of(State.values()).filter(e -> String.valueOf(e).equals(state)).findFirst();
         if (checkState.isEmpty())
             throw new UnexpectedErrorException(String.valueOf(HandlerMessages.UNEXPECTED_ERROR));
 
         switch (State.valueOf(state)) {
             case ALL:
-                return bookingRepository.findAllByBookerOrderByIdDesc(userService.getById(userId));
+                return bookingRepository.findAllByBookerOrderByIdDesc(userService.getById(userId))
+                        .stream().map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
             case CURRENT:
-                return bookingRepository.currentTimeBooker(userId, LocalDateTime.now());
+                return bookingRepository.currentTimeBooker(userId, LocalDateTime.now())
+                        .stream().map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
             case PAST:
-                return bookingRepository.findAllByBookerAndEndIsBeforeOrderByStartDesc(userService.getById(userId), LocalDateTime.now());
+                return bookingRepository.findAllByBookerAndEndIsBeforeOrderByStartDesc(userService.getById(userId), LocalDateTime.now())
+                        .stream().map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
             case FUTURE:
-                return bookingRepository.findAllByBookerAndStartIsAfterOrderByStartDesc(userService.getById(userId), LocalDateTime.now());
+                return bookingRepository.findAllByBookerAndStartIsAfterOrderByStartDesc(userService.getById(userId), LocalDateTime.now())
+                        .stream().map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
             case WAITING:
-                return bookingRepository.findAllByBookerAndStatusOrderByStartDesc(userService.getById(userId), Status.WAITING);
+                return bookingRepository.findAllByBookerAndStatusOrderByStartDesc(userService.getById(userId), Status.WAITING)
+                        .stream().map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
             case REJECTED:
-                return bookingRepository.findAllByBookerAndStatusOrderByStartDesc(userService.getById(userId), Status.REJECTED);
+                return bookingRepository.findAllByBookerAndStatusOrderByStartDesc(userService.getById(userId), Status.REJECTED)
+                        .stream().map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
         }
-        return null;
+        return Collections.emptyList();
     }
 
 
     @Transactional
-    public List<Booking> ownerGet(Long userId, String state) throws IllegalArgumentException {
+    public List<BookingDtoRes> ownerGet(Long userId, String state) throws IllegalArgumentException {
         Optional<State> checkState = Stream.of(State.values()).filter(e -> String.valueOf(e).equals(state)).findFirst();
         if (checkState.isEmpty())
             throw new UnexpectedErrorException(String.valueOf(HandlerMessages.UNEXPECTED_ERROR));
@@ -150,18 +145,24 @@ public class BookingService extends AbstractServiceImpl<Booking, BookingReposito
             case ALL:
                 if (!userRepository.existsById(userId))
                     throw new InternalException(String.valueOf(HandlerMessages.SERVER_ERROR));
-                return bookingRepository.findAll(userId);
+                return bookingRepository.findAll(userId).stream()
+                        .map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
             case CURRENT:
-                return bookingRepository.currentTimeOwner(userId, LocalDateTime.now());
+                return bookingRepository.currentTimeOwner(userId, LocalDateTime.now()).stream()
+                        .map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
             case PAST:
-                return bookingRepository.findPast(userId, LocalDateTime.now());
+                return bookingRepository.findPast(userId, LocalDateTime.now()).stream()
+                        .map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
             case FUTURE:
-                return bookingRepository.findFuture(userId, LocalDateTime.now());
+                return bookingRepository.findFuture(userId, LocalDateTime.now()).stream()
+                        .map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
             case WAITING:
-                return bookingRepository.findByStatus(userId, String.valueOf(Status.WAITING));
+                return bookingRepository.findByStatus(userId, String.valueOf(Status.WAITING)).stream()
+                        .map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
             case REJECTED:
-                return bookingRepository.findByStatus(userId, String.valueOf(Status.REJECTED));
+                return bookingRepository.findByStatus(userId, String.valueOf(Status.REJECTED)).stream()
+                        .map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
         }
-        return null;
+        return Collections.emptyList();
     }
 }

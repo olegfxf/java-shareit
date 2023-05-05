@@ -1,23 +1,29 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.booking.model.Status;
 
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
 @Setter
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookingDtoReq {
     @Positive
     long id;
 
+    @JsonFormat
+    @FutureOrPresent
     LocalDateTime start;
 
+    @JsonFormat
+    @Future
     LocalDateTime end;
 
     @Positive
@@ -25,7 +31,4 @@ public class BookingDtoReq {
 
     @Positive
     Long bookerId;
-
-    Status status;
-
 }

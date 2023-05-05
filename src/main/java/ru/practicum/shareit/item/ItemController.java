@@ -11,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.dto.SmallBooking;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
@@ -35,31 +33,15 @@ public class ItemController {
     ItemService itemService;
     UserService userService;
     ItemMapper itemMapper;
-    BookingRepository bookingRepository;
-    ItemRepository itemRepository;
-    CommentRepository commentRepository;
-    SmallBooking smallBooking;
-    CommentMapper commentMapper;
 
     @Autowired
     public ItemController(ItemService itemService,
                           ItemMapper itemMapper,
-                          BookingRepository bookingRepository,
-                          ItemRepository itemRepository,
-                          SmallBooking smallBooking,
-                          CommentRepository commentRepository,
-                          CommentMapper commentMapper,
                           UserService userService) {
         this.itemService = itemService;
         this.itemMapper = itemMapper;
-        this.bookingRepository = bookingRepository;
-        this.itemRepository = itemRepository;
-        this.smallBooking = smallBooking;
         this.userService = userService;
-        this.commentRepository = commentRepository;
-        this.commentMapper = commentMapper;
     }
-
 
     @PostMapping
     @ResponseBody
@@ -94,20 +76,17 @@ public class ItemController {
         return itemService.getById(itemId, Long.valueOf(userId));
     }
 
-
     @PutMapping
     public ItemDtoRes update(@Valid @RequestBody Item item) {
         log.debug(String.valueOf(LogMessages.TRY_UPDATE), item);
         return itemMapper.toItemDtoRes(itemService.update(item));
     }
 
-
     @DeleteMapping("/{itemId}")
     public ItemDtoRes removeById(@PathVariable Long itemId) {
         log.debug(String.valueOf(LogMessages.TRY_REMOVE_OBJECT), itemId);
         return itemMapper.toItemDtoRes(itemService.removeById(itemId));
     }
-
 
     @PatchMapping(path = "/{id}", consumes = "application/json")
     public ResponseEntity<Item> updateItem(@PathVariable Long id,
@@ -154,6 +133,6 @@ public class ItemController {
     public CommentDtoRes addComment(@Valid @RequestBody CommentDtoReq commentDtoReq,
                                     @RequestHeader("x-sharer-user-id") @NotEmpty String userId,
                                     @PathVariable Long itemId) {
-        return commentMapper.toCommentDtoRes(itemService.addComment(commentMapper.toComment(commentDtoReq), itemId, Long.valueOf(userId)));
+        return CommentMapper.toCommentDtoRes(itemService.addComment(CommentMapper.toComment(commentDtoReq), itemId, Long.valueOf(userId)));
     }
 }

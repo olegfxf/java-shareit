@@ -1,9 +1,6 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.abstracts.AbstractModel;
 import ru.practicum.shareit.user.model.User;
@@ -13,9 +10,13 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity(name = "comments")
+@Entity
+@Table(name = "comments")
 public class Comment extends AbstractModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +35,4 @@ public class Comment extends AbstractModel {
 
     @Column(name = "created")
     LocalDateTime created;
-
-
 }

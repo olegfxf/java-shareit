@@ -8,12 +8,14 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.abstracts.AbstractModel;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Setter
 @Getter
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity(name = "users")
+@Entity
+@Table(name = "users")
 public class User extends AbstractModel {
     String name;
     String email;

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.abstracts.AbstractServiceImpl;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.dto.SmallBooking;
+import ru.practicum.shareit.booking.dto.LastNextRecordBooking;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDtoRes;
@@ -29,21 +29,21 @@ import static ru.practicum.shareit.booking.model.Status.APPROVED;
 public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
     ItemRepository itemRepository;
     BookingRepository bookingRepository;
-    SmallBooking smallBooking;
+    LastNextRecordBooking lastNextRecordBooking;
     CommentRepository commentRepository;
     UserRepository userRepository;
     ItemMapper itemMapper;
 
     @Autowired
     public ItemService(ItemRepository itemRepository,
-                       SmallBooking smallBooking,
+                       LastNextRecordBooking lastNextRecordBooking,
                        CommentRepository commentRepository,
                        BookingRepository bookingRepository,
                        ItemMapper itemMapper,
                        UserRepository userRepository) {
         super(itemRepository);
         this.itemRepository = itemRepository;
-        this.smallBooking = smallBooking;
+        this.lastNextRecordBooking = lastNextRecordBooking;
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
         this.itemMapper = itemMapper;
@@ -74,8 +74,8 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         ItemDtoRes itemDtoRes = itemMapper.toItemDtoRes(item);
         Long ownerId = item.getOwner().getId();
         if (Long.valueOf(userId).equals(ownerId)) {
-            itemDtoRes.setNextBooking(smallBooking.get(itemId, true, Long.valueOf(userId)));
-            itemDtoRes.setLastBooking(smallBooking.get(itemId, false, Long.valueOf(userId)));
+            itemDtoRes.setNextBooking(lastNextRecordBooking.get(itemId, true, Long.valueOf(userId)));
+            itemDtoRes.setLastBooking(lastNextRecordBooking.get(itemId, false, Long.valueOf(userId)));
         }
 
         log.debug(String.valueOf(LogMessages.GET), itemDtoRes);

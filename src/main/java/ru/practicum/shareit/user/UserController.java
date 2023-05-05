@@ -42,8 +42,6 @@ public class UserController {
     public UserDtoRes save(@RequestBody @Valid UserDtoReq userDtoReq) {
         User user = userDtoReq.toUser();
         log.debug(String.valueOf(LogMessages.TRY_ADD), user);
-        ;
-        userService.getAll().stream().forEach(System.out::println);
         return new UserDtoRes(userService.save(user));
     }
 

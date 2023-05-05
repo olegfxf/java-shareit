@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.CommentRepository;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -13,30 +12,24 @@ import java.util.stream.Collectors;
 
 @Component
 public class ItemMapper {
-    UserService userService;
     CommentRepository commentRepository;
-    CommentMapper commentMapper;
 
     @Autowired
-    private ItemMapper(UserService userService,
-                       CommentMapper commentMapper,
-                       CommentRepository commentRepository) {
-        this.userService = userService;
-        this.commentMapper = commentMapper;
+    private ItemMapper(CommentRepository commentRepository) {
         this.commentRepository = commentRepository;
     }
 
-    public Item toItem(ItemDtoReq itemDtoReq, Long ownerId) {
-        Item item = new Item();
-        item.setName(itemDtoReq.getName());
-        item.setDescription(itemDtoReq.getDescription());
-        item.setAvailable(itemDtoReq.getAvailable());
-
+    public static Item toItem(ItemDtoReq itemDtoReq, Long ownerId) {
         User owner = new User();
         owner.setId(itemDtoReq.getOwnerId());
-        item.setOwner(owner);
-        item.setRequestId(itemDtoReq.getRequest());
-        return item;
+
+        return Item.builder()
+                .name(itemDtoReq.getName())
+                .description(itemDtoReq.getDescription())
+                .available(itemDtoReq.getAvailable())
+                .owner(owner)
+                .requestId(itemDtoReq.getRequest())
+                .build();
     }
 
     public ItemDtoRes toItemDtoRes(Item item) {
@@ -48,11 +41,8 @@ public class ItemMapper {
         itemDtoRes.setOwnerId(item.getOwner().getId());
         itemDtoRes.setRequest(item.getRequestId());
         List<Comment> comments = commentRepository.findAllByItem(item);
-        List<CommentDtoRes> commentDtoRes = comments.stream().map(e -> commentMapper.toCommentDtoRes(e)).collect(Collectors.toList());
-
+        List<CommentDtoRes> commentDtoRes = comments.stream().map(e -> CommentMapper.toCommentDtoRes(e)).collect(Collectors.toList());
         itemDtoRes.setComments(commentDtoRes);
-
-
         return itemDtoRes;
     }
 }

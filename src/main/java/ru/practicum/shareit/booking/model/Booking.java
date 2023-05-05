@@ -1,15 +1,15 @@
 package ru.practicum.shareit.booking.model;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.abstracts.AbstractModel;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDateTime;
 
 /**
@@ -20,11 +20,19 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity(name = "bookings")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Entity
+@Table(name = "bookings")
 public class Booking extends AbstractModel {
+    @JsonFormat
+    @FutureOrPresent
     @Column(name = "start_date")
     LocalDateTime start;
 
+    @JsonFormat
+    @Future
     @Column(name = "end_date")
     LocalDateTime end;
 

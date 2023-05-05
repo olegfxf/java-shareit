@@ -1,10 +1,8 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.booking.dto.SmallBooking;
+import ru.practicum.shareit.booking.dto.LastNextRecordBooking;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +10,9 @@ import java.util.Optional;
 @Setter
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class ItemDtoRes {
     long id;
 
@@ -25,9 +26,9 @@ public class ItemDtoRes {
 
     Long request;
 
-    Optional<SmallBooking> lastBooking;
+    Optional<LastNextRecordBooking> lastBooking;
 
-    Optional<SmallBooking> nextBooking;
+    Optional<LastNextRecordBooking> nextBooking;
 
     List<CommentDtoRes> comments;
 
