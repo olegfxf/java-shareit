@@ -5,21 +5,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import com.sun.jdi.InternalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.messages.ExceptionMessages;
-import ru.practicum.shareit.messages.HandlerMessages;
 import ru.practicum.shareit.messages.LogMessages;
-import ru.practicum.shareit.user.UserService;
-import ru.practicum.shareit.user.model.User;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -32,14 +24,11 @@ import java.util.List;
 @RequestMapping("/items")
 public class ItemController {
     ItemService itemService;
-    UserService userService;
     ItemMapper itemMapper = new ItemMapper();
 
     @Autowired
-    public ItemController(ItemService itemService,
-                          UserService userService) {
+    public ItemController(ItemService itemService) {
         this.itemService = itemService;
-        this.userService = userService;
     }
 
     @PostMapping
@@ -74,40 +63,14 @@ public class ItemController {
         return itemMapper.toItemDtoRes(itemService.removeById(itemId));
     }
 
-    @PatchMapping(path = "/{id}", consumes = "application/json")
+    @PatchMapping(path = "/{itemId}", consumes = "application/json")
     @ResponseBody
-    public Item updateItem(@PathVariable Long id,
-                                           @RequestBody JsonMergePatch patch,
-                                           @RequestHeader("x-sharer-user-id") @NotEmpty String ownerId) {
-
-        Item item = itemService.getById(id);
-
-
-        if (!Long.valueOf(ownerId).equals(item.getOwner().getId())) {
-            log.debug(String.valueOf(HandlerMessages.SERVER_ERROR));
-            throw new NotFoundException(ExceptionMessages.NOT_FOUND_ID);
-        }
-
-
-        try {
-            Item itemPatched = applyPatchToItem(patch, item);
-            User owner = userService.getById(Long.valueOf(ownerId));
-            itemPatched.setOwner(owner);
-            log.debug(String.valueOf(LogMessages.TRY_PATCH), itemPatched);
-            System.out.println(itemPatched + "  KKK");
-
-            itemService.update(itemPatched);
-            return itemService.update(itemPatched);
-           // return ResponseEntity.ok(itemPatched);
-        } catch (JsonPatchException | JsonProcessingException e) {
-            //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            throw new InternalException(String.valueOf(HandlerMessages.SERVER_ERROR));
-        } catch (NotFoundException e) {
-            //return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-        }
-        //return itemService.updateItem1(id, patch, ownerId);
+    public ItemDtoRes updateItem(@PathVariable Long itemId,
+                                 @RequestBody JsonMergePatch patch,
+                                 @RequestHeader("x-sharer-user-id") @NotEmpty String ownerId) {
+        return itemService.updateItem(itemId, patch, ownerId);
     }
+
 
     private Item applyPatchToItem(
             JsonMergePatch patch, Item targetCustomer) throws JsonPatchException, JsonProcessingException {

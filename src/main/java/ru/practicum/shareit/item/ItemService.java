@@ -8,13 +8,8 @@ import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.sun.jdi.InternalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import ru.practicum.shareit.abstracts.AbstractServiceImpl;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.LastNextRecordBooking;
@@ -33,7 +28,6 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,8 +63,7 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         this.userRepository = userRepository;
     }
 
-
-    public ItemDtoRes addItem(ItemDtoReq itemDtoReq, String ownerId){
+    public ItemDtoRes addItem(ItemDtoReq itemDtoReq, String ownerId) {
 
         if (!userService.getAll().stream().anyMatch(e -> Long.valueOf(ownerId).equals(e.getId()))) {
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
@@ -85,10 +78,8 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         return itemMapper.toItemDtoRes(save(item));
     }
 
-
-
-
-    public Item updateItem1(Long id, JsonMergePatch patch, String ownerId) {
+    @Transactional
+    public ItemDtoRes updateItem(Long id, JsonMergePatch patch, String ownerId) {
         Item item = this.getById(id);
 
         if (!Long.valueOf(ownerId).equals(item.getOwner().getId())) {
@@ -101,29 +92,19 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
             User owner = userService.getById(Long.valueOf(ownerId));
             itemPatched.setOwner(owner);
             log.debug(String.valueOf(LogMessages.TRY_PATCH), itemPatched);
-            System.out.println(itemPatched + "  KKK");
-
-           // this.update(itemPatched);
-            //return this.update(itemPatched);
-            return itemRepository.save(itemPatched);
-            //return ResponseEntity.ok(itemPatched);
+            return itemMapper.toItemDtoRes(itemRepository.save(itemPatched));
         } catch (JsonPatchException | JsonProcessingException e) {
-            //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             throw new InternalException(String.valueOf(HandlerMessages.SERVER_ERROR));
         } catch (NotFoundException e) {
-            //return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
         }
     }
 
-    private Item applyPatchToItem(JsonMergePatch patch, Item targetCustomer)
+    public Item applyPatchToItem(JsonMergePatch patch, Item targetCustomer)
             throws JsonPatchException, JsonProcessingException {
         JsonNode patched = patch.apply(new ObjectMapper().convertValue(targetCustomer, JsonNode.class));
         return new ObjectMapper().treeToValue(patched, Item.class);
     }
-
-
-
 
     public List<ItemDtoRes> getAllByUserId(Long userId) {
         List<ItemDtoRes> itemDtoRes1 = itemRepository.findAll().stream().filter(e -> e.getOwner().getId().equals(userId))

@@ -24,7 +24,6 @@ public abstract class AbstractServiceImpl<E extends AbstractModel, R extends Com
         this.repository = repository;
     }
 
-    //@Transactional
     public E save(E obj) {
         E obj1;
         try {
@@ -36,7 +35,6 @@ public abstract class AbstractServiceImpl<E extends AbstractModel, R extends Com
         return obj1;
     }
 
-    //@Override
     public List<E> getAll() {
         log.debug(String.valueOf(LogMessages.GET_ALL_USERS), repository.findAll());
         return repository.findAll();
