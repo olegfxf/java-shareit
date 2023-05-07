@@ -1,13 +1,27 @@
 package ru.practicum.shareit.item;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
+import com.sun.jdi.InternalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import ru.practicum.shareit.abstracts.AbstractServiceImpl;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.LastNextRecordBooking;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.item.dto.CommentMapper;
+import ru.practicum.shareit.item.dto.ItemDtoReq;
 import ru.practicum.shareit.item.dto.ItemDtoRes;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
@@ -16,42 +30,102 @@ import ru.practicum.shareit.messages.ExceptionMessages;
 import ru.practicum.shareit.messages.HandlerMessages;
 import ru.practicum.shareit.messages.LogMessages;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static ru.practicum.shareit.booking.model.Status.APPROVED;
 
+@Transactional(readOnly = true)
 @Service
 @Slf4j
 public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
     ItemRepository itemRepository;
     BookingRepository bookingRepository;
+    UserService userService;
     LastNextRecordBooking lastNextRecordBooking;
     CommentRepository commentRepository;
     UserRepository userRepository;
-    ItemMapper itemMapper;
+    ItemMapper itemMapper = new ItemMapper();
 
     @Autowired
     public ItemService(ItemRepository itemRepository,
                        LastNextRecordBooking lastNextRecordBooking,
+                       UserService userService,
                        CommentRepository commentRepository,
                        BookingRepository bookingRepository,
-                       ItemMapper itemMapper,
                        UserRepository userRepository) {
         super(itemRepository);
         this.itemRepository = itemRepository;
         this.lastNextRecordBooking = lastNextRecordBooking;
+        this.userService = userService;
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
-        this.itemMapper = itemMapper;
         this.userRepository = userRepository;
     }
 
 
-    public List<ItemDtoRes> getAllByOwnerId1(Long userId) {
+    public ItemDtoRes addItem(ItemDtoReq itemDtoReq, String ownerId){
+
+        if (!userService.getAll().stream().anyMatch(e -> Long.valueOf(ownerId).equals(e.getId()))) {
+            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+        }
+        if (itemRepository.findAll().stream().anyMatch(e -> itemDtoReq.getName().equals(e.getName())))
+            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+
+        Item item = itemMapper.toItem(itemDtoReq, Long.valueOf(ownerId));
+        User owner = userService.getById(Long.valueOf(ownerId));
+        item.setOwner(owner);
+
+        return itemMapper.toItemDtoRes(save(item));
+    }
+
+
+
+
+    public Item updateItem1(Long id, JsonMergePatch patch, String ownerId) {
+        Item item = this.getById(id);
+
+        if (!Long.valueOf(ownerId).equals(item.getOwner().getId())) {
+            log.debug(String.valueOf(HandlerMessages.SERVER_ERROR));
+            throw new NotFoundException(ExceptionMessages.NOT_FOUND_ID);
+        }
+
+        try {
+            Item itemPatched = applyPatchToItem(patch, item);
+            User owner = userService.getById(Long.valueOf(ownerId));
+            itemPatched.setOwner(owner);
+            log.debug(String.valueOf(LogMessages.TRY_PATCH), itemPatched);
+            System.out.println(itemPatched + "  KKK");
+
+           // this.update(itemPatched);
+            //return this.update(itemPatched);
+            return itemRepository.save(itemPatched);
+            //return ResponseEntity.ok(itemPatched);
+        } catch (JsonPatchException | JsonProcessingException e) {
+            //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new InternalException(String.valueOf(HandlerMessages.SERVER_ERROR));
+        } catch (NotFoundException e) {
+            //return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+        }
+    }
+
+    private Item applyPatchToItem(JsonMergePatch patch, Item targetCustomer)
+            throws JsonPatchException, JsonProcessingException {
+        JsonNode patched = patch.apply(new ObjectMapper().convertValue(targetCustomer, JsonNode.class));
+        return new ObjectMapper().treeToValue(patched, Item.class);
+    }
+
+
+
+
+    public List<ItemDtoRes> getAllByUserId(Long userId) {
         List<ItemDtoRes> itemDtoRes1 = itemRepository.findAll().stream().filter(e -> e.getOwner().getId().equals(userId))
                 .map(item -> itemMapper.toItemDtoRes(item)).collect(toList());
 
@@ -77,12 +151,14 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
             itemDtoRes.setNextBooking(lastNextRecordBooking.get(itemId, true, Long.valueOf(userId)));
             itemDtoRes.setLastBooking(lastNextRecordBooking.get(itemId, false, Long.valueOf(userId)));
         }
+        itemDtoRes.setComments(commentRepository.findAllByItem(item).stream()
+                .map(e -> CommentMapper.toCommentDtoRes(e)).collect(Collectors.toList()));
 
         log.debug(String.valueOf(LogMessages.GET), itemDtoRes);
         return itemDtoRes;
     }
 
-
+    @Transactional
     public Comment addComment(Comment comment1, Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId).get();
         User user = userRepository.findById(userId).get();

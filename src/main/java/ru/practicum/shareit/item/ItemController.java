@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
+import com.sun.jdi.InternalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,14 +33,12 @@ import java.util.List;
 public class ItemController {
     ItemService itemService;
     UserService userService;
-    ItemMapper itemMapper;
+    ItemMapper itemMapper = new ItemMapper();
 
     @Autowired
     public ItemController(ItemService itemService,
-                          ItemMapper itemMapper,
                           UserService userService) {
         this.itemService = itemService;
-        this.itemMapper = itemMapper;
         this.userService = userService;
     }
 
@@ -47,27 +46,14 @@ public class ItemController {
     @ResponseBody
     public ItemDtoRes save(@Valid @RequestBody ItemDtoReq itemDtoReq,
                            @RequestHeader("x-sharer-user-id") @NotEmpty String ownerId) {
-
-        if (!userService.getAll().stream().anyMatch(e -> Long.valueOf(ownerId).equals(e.getId()))) {
-            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-        }
-
-        if (itemService.getAll().stream().anyMatch(e -> itemDtoReq.getName().equals(e.getName())))
-            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-
-
-        Item item = itemMapper.toItem(itemDtoReq, Long.valueOf(ownerId));
-        User owner = userService.getById(Long.valueOf(ownerId));
-        item.setOwner(owner);
-        log.debug(String.valueOf(LogMessages.TRY_ADD), item);
-        return itemMapper.toItemDtoRes(itemService.save(item));
-
+        log.debug(String.valueOf(LogMessages.TRY_ADD), "item");
+        return itemService.addItem(itemDtoReq, ownerId);
     }
 
     @GetMapping
     public List<ItemDtoRes> getAll(@RequestHeader("x-sharer-user-id") @NotEmpty String userId) {
         log.debug(String.valueOf(LogMessages.TRY_GET_ALL), "вещей");
-        return itemService.getAllByOwnerId1(Long.valueOf(userId));
+        return itemService.getAllByUserId(Long.valueOf(userId));
     }
 
     @GetMapping("/{itemId}")
@@ -89,30 +75,38 @@ public class ItemController {
     }
 
     @PatchMapping(path = "/{id}", consumes = "application/json")
-    public ResponseEntity<Item> updateItem(@PathVariable Long id,
+    @ResponseBody
+    public Item updateItem(@PathVariable Long id,
                                            @RequestBody JsonMergePatch patch,
                                            @RequestHeader("x-sharer-user-id") @NotEmpty String ownerId) {
 
+        Item item = itemService.getById(id);
+
+
+        if (!Long.valueOf(ownerId).equals(item.getOwner().getId())) {
+            log.debug(String.valueOf(HandlerMessages.SERVER_ERROR));
+            throw new NotFoundException(ExceptionMessages.NOT_FOUND_ID);
+        }
+
+
         try {
-            Item item = itemService.getById(id);
             Item itemPatched = applyPatchToItem(patch, item);
-
-            if (!Long.valueOf(ownerId).equals(item.getOwner().getId())) {
-                log.debug(String.valueOf(HandlerMessages.SERVER_ERROR));
-                throw new NotFoundException(ExceptionMessages.NOT_FOUND_ID);
-            }
-
             User owner = userService.getById(Long.valueOf(ownerId));
             itemPatched.setOwner(owner);
             log.debug(String.valueOf(LogMessages.TRY_PATCH), itemPatched);
+            System.out.println(itemPatched + "  KKK");
 
             itemService.update(itemPatched);
-            return ResponseEntity.ok(itemPatched);
+            return itemService.update(itemPatched);
+           // return ResponseEntity.ok(itemPatched);
         } catch (JsonPatchException | JsonProcessingException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new InternalException(String.valueOf(HandlerMessages.SERVER_ERROR));
         } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            //return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
         }
+        //return itemService.updateItem1(id, patch, ownerId);
     }
 
     private Item applyPatchToItem(
