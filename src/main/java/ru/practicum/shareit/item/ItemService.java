@@ -15,7 +15,6 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.LastNextRecordBooking;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
-import ru.practicum.shareit.item.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDtoReq;
 import ru.practicum.shareit.item.dto.ItemDtoRes;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -30,7 +29,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static ru.practicum.shareit.booking.model.Status.APPROVED;
@@ -126,14 +124,13 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         }
 
         Item item = itemRepository.findById(itemId).get();
-        ItemDtoRes itemDtoRes = itemMapper.toItemDtoRes(item);
+        ItemDtoRes itemDtoRes = itemMapper.toItemImfoDtoRes(item, commentRepository.findAllByItem(item));
         Long ownerId = item.getOwner().getId();
         if (Long.valueOf(userId).equals(ownerId)) {
             itemDtoRes.setNextBooking(lastNextRecordBooking.get(itemId, true, Long.valueOf(userId)));
             itemDtoRes.setLastBooking(lastNextRecordBooking.get(itemId, false, Long.valueOf(userId)));
         }
-        itemDtoRes.setComments(commentRepository.findAllByItem(item).stream()
-                .map(e -> CommentMapper.toCommentDtoRes(e)).collect(Collectors.toList()));
+
 
         log.debug(String.valueOf(LogMessages.GET), itemDtoRes);
         return itemDtoRes;
