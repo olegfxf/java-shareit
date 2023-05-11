@@ -8,7 +8,8 @@ public enum HandlerMessages {
     VALID("Ошибка валидации"),
     NOT_FOUND("Не найден объект"),
     CONFLICT("Конфликт"),
-    SERVER_ERROR("Ошибка сервера");
+    SERVER_ERROR("Ошибка сервера"),
+    UNEXPECTED_ERROR("Неопределенная ошибка");
 
     private final String text;
 

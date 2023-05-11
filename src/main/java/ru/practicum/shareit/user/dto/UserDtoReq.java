@@ -18,6 +18,7 @@ public class UserDtoReq {
     @NotNull
     @NotBlank(message = ExceptionMessages.EMPTY_NAME)
     String name;
+
     @NotNull
     @Email(message = ExceptionMessages.INCORRECT_EMAIL)
     String email;

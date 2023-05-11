@@ -13,11 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.abstracts.AbstractDLAStorage;
-import ru.practicum.shareit.abstracts.AbstractStorage;
-import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.messages.HandlerMessages;
 import ru.practicum.shareit.messages.LogMessages;
 import ru.practicum.shareit.user.dto.UserDtoReq;
 import ru.practicum.shareit.user.dto.UserDtoRes;
@@ -34,18 +30,16 @@ import java.util.stream.Collectors;
 @RequestMapping(path = "/users")
 public class UserController {
     UserService userService;
-    AbstractStorage<User> userStorage;
     ModelMapper modelMapper = new ModelMapper();
 
     @Autowired
-    public UserController(UserService userService, AbstractDLAStorage<User> userDLAStorage) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userStorage = userDLAStorage;
     }
 
     @PostMapping
     @ResponseBody
-    public UserDtoRes save(@Valid @RequestBody UserDtoReq userDtoReq) {
+    public UserDtoRes save(@RequestBody @Valid UserDtoReq userDtoReq) {
         User user = userDtoReq.toUser();
         log.debug(String.valueOf(LogMessages.TRY_ADD), user);
         return new UserDtoRes(userService.save(user));
@@ -78,15 +72,9 @@ public class UserController {
     @PatchMapping(path = "/{id}", consumes = "application/json")
     public ResponseEntity<User> updateCustomer(@PathVariable Long id, @RequestBody JsonMergePatch patch) {
         try {
-            User user = userStorage.getById(id);
+            User user = userService.getById(id);
             User userPatched = applyPatchToUser(patch, user);
             log.debug(String.valueOf(LogMessages.TRY_PATCH), userPatched);
-
-            if (user.getName().equals(userPatched.getName()) && !user.getEmail().equals(userPatched.getEmail()))
-                userStorage.getALL().stream().forEach(e -> {
-                    if (userPatched.getEmail().equals(e.getEmail()))
-                        throw new ConflictException(String.valueOf(HandlerMessages.CONFLICT));
-                });
 
             userService.update(userPatched);
             return ResponseEntity.ok(userPatched);

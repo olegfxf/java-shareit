@@ -1,20 +1,34 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.abstracts.AbstractModel;
+import ru.practicum.shareit.user.model.User;
+
+import javax.persistence.*;
+
 
 @Setter
 @Getter
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Entity
+@Table(name = "items")
 public class Item extends AbstractModel {
     String name;
+
     String description;
+
+    @Column(name = "is_available")
     Boolean available;
-    Long owner;
-    String request;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    User owner;
+
+    @Column(name = "request_id")
+    Long requestId;
 }
