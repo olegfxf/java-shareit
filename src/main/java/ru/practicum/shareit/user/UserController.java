@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 @RequestMapping(path = "/users")
 public class UserController {
     UserService userService;
-    ModelMapper modelMapper = new ModelMapper();
 
     @Autowired
     public UserController(UserService userService) {
@@ -64,31 +63,35 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public User removeById(@PathVariable Long userId) {
+    public UserDtoRes removeById(@PathVariable Long userId) {
         log.debug(String.valueOf(LogMessages.TRY_REMOVE_OBJECT), userId);
-        return userService.removeById(userId);
+        return new UserDtoRes(userService.removeById(userId));
     }
 
     @PatchMapping(path = "/{id}", consumes = "application/json")
-    public ResponseEntity<User> updateCustomer(@PathVariable Long id, @RequestBody JsonMergePatch patch) {
-        try {
-            User user = userService.getById(id);
-            User userPatched = applyPatchToUser(patch, user);
-            log.debug(String.valueOf(LogMessages.TRY_PATCH), userPatched);
-
-            userService.update(userPatched);
-            return ResponseEntity.ok(userPatched);
-        } catch (JsonPatchException | JsonProcessingException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    @ResponseBody
+    public UserDtoRes updateCustomer(@PathVariable Long id, @RequestBody JsonMergePatch patch) {
+//        try {
+//            User user = userService.getById(id);
+//            User userPatched = applyPatchToUser(patch, user);
+//            log.debug(String.valueOf(LogMessages.TRY_PATCH), userPatched);
+//
+//            userService.update(userPatched);
+//            return ResponseEntity.ok(userPatched);
+//        } catch (JsonPatchException | JsonProcessingException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        } catch (NotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+        return userService.updateCustomer(id, patch);
     }
 
-    private User applyPatchToUser(
-            JsonMergePatch patch, User targetCustomer) throws JsonPatchException, JsonProcessingException {
-        JsonNode patched = patch.apply(new ObjectMapper().convertValue(targetCustomer, JsonNode.class));
-        return new ObjectMapper().treeToValue(patched, User.class);
-    }
+
+
+//    private User applyPatchToUser(
+//            JsonMergePatch patch, User targetCustomer) throws JsonPatchException, JsonProcessingException {
+//        JsonNode patched = patch.apply(new ObjectMapper().convertValue(targetCustomer, JsonNode.class));
+//        return new ObjectMapper().treeToValue(patched, User.class);
+//    }
 
 }

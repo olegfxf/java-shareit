@@ -61,33 +61,33 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         this.userRepository = userRepository;
     }
 
-    public ItemDtoRes addItem(ItemDtoReq itemDtoReq, String ownerId) {
+    public ItemDtoRes addItem(ItemDtoReq itemDtoReq, Long ownerId) {
 
-        if (!userService.getAll().stream().anyMatch(e -> Long.valueOf(ownerId).equals(e.getId()))) {
+        if (!userService.getAll().stream().anyMatch(e ->ownerId.equals(e.getId()))) {
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
         }
         if (itemRepository.findAll().stream().anyMatch(e -> itemDtoReq.getName().equals(e.getName())))
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
 
-        Item item = itemMapper.toItem(itemDtoReq, Long.valueOf(ownerId));
-        User owner = userService.getById(Long.valueOf(ownerId));
+        Item item = itemMapper.toItem(itemDtoReq,ownerId);
+        User owner = userService.getById(ownerId);
         item.setOwner(owner);
 
         return itemMapper.toItemDtoRes(save(item));
     }
 
     @Transactional
-    public ItemDtoRes updateItem(Long id, JsonMergePatch patch, String ownerId) {
+    public ItemDtoRes updateItem(Long id, JsonMergePatch patch, Long ownerId) {
         Item item = this.getById(id);
 
-        if (!Long.valueOf(ownerId).equals(item.getOwner().getId())) {
+        if (!ownerId.equals(item.getOwner().getId())) {
             log.debug(String.valueOf(HandlerMessages.SERVER_ERROR));
             throw new NotFoundException(ExceptionMessages.NOT_FOUND_ID);
         }
 
         try {
             Item itemPatched = applyPatchToItem(patch, item);
-            User owner = userService.getById(Long.valueOf(ownerId));
+            User owner = userService.getById(ownerId);
             itemPatched.setOwner(owner);
             log.debug(String.valueOf(LogMessages.TRY_PATCH), itemPatched);
             return itemMapper.toItemDtoRes(itemRepository.save(itemPatched));

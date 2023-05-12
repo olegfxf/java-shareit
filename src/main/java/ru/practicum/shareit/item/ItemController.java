@@ -15,6 +15,7 @@ import ru.practicum.shareit.messages.LogMessages;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,21 +35,21 @@ public class ItemController {
     @PostMapping
     @ResponseBody
     public ItemDtoRes save(@Valid @RequestBody ItemDtoReq itemDtoReq,
-                           @RequestHeader("x-sharer-user-id") @NotEmpty String ownerId) {
+                           @RequestHeader("x-sharer-user-id") @NotNull Long userId) {
         log.debug(String.valueOf(LogMessages.TRY_ADD), "item");
-        return itemService.addItem(itemDtoReq, ownerId);
+        return itemService.addItem(itemDtoReq, userId);
     }
 
     @GetMapping
-    public List<ItemDtoRes> getAll(@RequestHeader("x-sharer-user-id") @NotEmpty String userId) {
+    public List<ItemDtoRes> getAll(@RequestHeader("x-sharer-user-id") @NotNull Long userId) {
         log.debug(String.valueOf(LogMessages.TRY_GET_ALL), "вещей");
-        return itemService.getAllByUserId(Long.valueOf(userId));
+        return itemService.getAllByUserId(userId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDtoRes getById(@PathVariable Long itemId, @RequestHeader("x-sharer-user-id") @NotEmpty String userId) {
+    public ItemDtoRes getById(@PathVariable Long itemId, @RequestHeader("x-sharer-user-id") @NotNull Long userId) {
         log.debug(String.valueOf(LogMessages.TRY_GET_OBJECT), itemId);
-        return itemService.getById(itemId, Long.valueOf(userId));
+        return itemService.getById(itemId, userId);
     }
 
     @PutMapping
@@ -67,16 +68,10 @@ public class ItemController {
     @ResponseBody
     public ItemDtoRes updateItem(@PathVariable Long itemId,
                                  @RequestBody JsonMergePatch patch,
-                                 @RequestHeader("x-sharer-user-id") @NotEmpty String ownerId) {
-        return itemService.updateItem(itemId, patch, ownerId);
+                                 @RequestHeader("x-sharer-user-id") @NotNull Long userId) {
+        return itemService.updateItem(itemId, patch, userId);
     }
 
-
-    private Item applyPatchToItem(
-            JsonMergePatch patch, Item targetCustomer) throws JsonPatchException, JsonProcessingException {
-        JsonNode patched = patch.apply(new ObjectMapper().convertValue(targetCustomer, JsonNode.class));
-        return new ObjectMapper().treeToValue(patched, Item.class);
-    }
 
     @GetMapping("/search")
     public List<ItemDtoRes> search(@RequestParam String text) {
@@ -88,8 +83,8 @@ public class ItemController {
     @PostMapping("{itemId}/comment")
     @ResponseBody
     public CommentDtoRes addComment(@Valid @RequestBody CommentDtoReq commentDtoReq,
-                                    @RequestHeader("x-sharer-user-id") @NotEmpty String userId,
+                                    @RequestHeader("x-sharer-user-id") @NotNull Long userId,
                                     @PathVariable Long itemId) {
-        return CommentMapper.toCommentDtoRes(itemService.addComment(CommentMapper.toComment(commentDtoReq), itemId, Long.valueOf(userId)));
+        return CommentMapper.toCommentDtoRes(itemService.addComment(CommentMapper.toComment(commentDtoReq), itemId,userId));
     }
 }
