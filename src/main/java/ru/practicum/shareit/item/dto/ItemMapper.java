@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dto.ItemForRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -13,12 +14,11 @@ public class ItemMapper {
         User owner = new User();
         owner.setId(itemDtoReq.getOwnerId());
 
-        return Item.builder()
-                .name(itemDtoReq.getName())
+        return Item.builder().name(itemDtoReq.getName())
                 .description(itemDtoReq.getDescription())
                 .available(itemDtoReq.getAvailable())
                 .owner(owner)
-                .requestId(itemDtoReq.getRequest())
+                .requestId(itemDtoReq.getRequestId())
                 .build();
     }
 
@@ -29,7 +29,7 @@ public class ItemMapper {
         itemDtoRes.setDescription(item.getDescription());
         itemDtoRes.setAvailable(item.getAvailable());
         itemDtoRes.setOwnerId(item.getOwner().getId());
-        itemDtoRes.setRequest(item.getRequestId());
+        itemDtoRes.setRequestId(item.getRequestId());
         return itemDtoRes;
     }
 
@@ -44,9 +44,20 @@ public class ItemMapper {
         itemDtoRes.setDescription(item.getDescription());
         itemDtoRes.setAvailable(item.getAvailable());
         itemDtoRes.setOwnerId(item.getOwner().getId());
-        itemDtoRes.setRequest(item.getRequestId());
+        itemDtoRes.setRequestId(item.getRequestId());
         itemDtoRes.setComments(commentDtos);
         return itemDtoRes;
+    }
+
+    public static ItemForRequest toItemRequestForUserDto(Item item)  {
+        return ItemForRequest.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .requestId(item.getRequestId())
+             //   .ownerId(item.getOwner().getId())
+                .build();
     }
 
 }

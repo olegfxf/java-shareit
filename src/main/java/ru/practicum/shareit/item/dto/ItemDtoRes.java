@@ -24,7 +24,7 @@ public class ItemDtoRes {
 
     Long ownerId;
 
-    Long request;
+    Long requestId;
 
     Optional<LastNextRecordBooking> lastBooking;
 

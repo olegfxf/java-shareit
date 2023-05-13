@@ -28,5 +28,5 @@ public class ItemDtoReq {
     Long ownerId;
 
     @Positive
-    Long request;
+    Long requestId;
 }

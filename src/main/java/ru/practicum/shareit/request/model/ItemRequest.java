@@ -6,6 +6,7 @@ import ru.practicum.shareit.abstracts.AbstractModel;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 
@@ -24,11 +25,12 @@ public class ItemRequest extends AbstractModel {
     @Column(name = "requesets_id")
     Long id;
 
+    @NotNull
     @Column(nullable = false)
     String description;
 
     @ManyToOne
-    @JoinColumn(name = "users_id", nullable = false)
+    @JoinColumn(name = "requester_id", nullable = false)
     User requester;
 
     @Column(nullable = false)

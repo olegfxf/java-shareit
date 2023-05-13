@@ -15,7 +15,9 @@ public interface ItemRepository extends CommonRepository<Item>, QuerydslPredicat
             " OR    upper(it.description) LIKE upper(concat('%', ?1, '%')) AND it.available = true")
     List<Item> search(String text);
 
-    boolean existsByIdAndAvailable(Long id, Boolean available);
+ //   boolean existsByIdAndAvailable(Long id, Boolean available);
 
     boolean existsById(Long id);
+
+    List<Item> findAllByRequestId(Long requestId);
 }
