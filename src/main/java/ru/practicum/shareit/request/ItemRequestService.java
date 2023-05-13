@@ -85,8 +85,11 @@ public class ItemRequestService {
         return itemRequestDtoPageForUsers;
     }
 
-    public ItemRequestDtoForUser getById(Long itemRequestId) {
+    public ItemRequestDtoForUser getById(Long itemRequestId, Long userId) {
         if (!itemRequestRepository.findById(itemRequestId).isPresent())
+            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+
+        if (!userRepository.findById(userId).isPresent())
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
 
         return ItemRequestMapper.toItemRequestDtoForUser(itemRequestRepository.findById(itemRequestId).get(),

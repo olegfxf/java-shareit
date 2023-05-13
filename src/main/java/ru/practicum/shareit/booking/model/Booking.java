@@ -11,6 +11,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * TODO Sprint add-bookings.
@@ -26,6 +27,10 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "bookings")
 public class Booking extends AbstractModel {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @JsonFormat
     @FutureOrPresent
     @Column(name = "start_date")
@@ -47,4 +52,19 @@ public class Booking extends AbstractModel {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     Status status;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Booking booking = (Booking) o;
+        return Objects.equals(id, booking.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id);
+    }
+
 }

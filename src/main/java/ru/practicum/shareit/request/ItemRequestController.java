@@ -2,7 +2,6 @@ package ru.practicum.shareit.request;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.messages.LogMessages;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -13,8 +12,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -53,7 +50,7 @@ public class ItemRequestController {
     @GetMapping("/{requestId}")
     public ItemRequestDtoForUser getById(@PathVariable Long requestId, @RequestHeader("x-sharer-user-id") @NotNull Long userId) {
         log.debug(String.valueOf(LogMessages.TRY_GET_OBJECT), "поступил запрос на данные по запросу  с id " + requestId);
-        return itemRequestService.getById(requestId);
+        return itemRequestService.getById(requestId, userId);
     }
 
 }
