@@ -61,7 +61,7 @@ public class ItemController {
     @DeleteMapping("/{itemId}")
     public ItemDtoRes removeById(@PathVariable Long itemId) {
         log.debug(String.valueOf(LogMessages.TRY_REMOVE_OBJECT), itemId);
-        return itemMapper.toItemDtoRes(itemService.removeById(itemId));
+        return itemService.removeById1(itemId);
     }
 
     @PatchMapping(path = "/{itemId}", consumes = "application/json")

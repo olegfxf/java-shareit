@@ -63,13 +63,13 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
 
     public ItemDtoRes addItem(ItemDtoReq itemDtoReq, Long ownerId) {
 
-        if (!userService.getAll().stream().anyMatch(e ->ownerId.equals(e.getId()))) {
+        if (!userService.getAll().stream().anyMatch(e -> ownerId.equals(e.getId()))) {
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
         }
         if (itemRepository.findAll().stream().anyMatch(e -> itemDtoReq.getName().equals(e.getName())))
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
 
-        Item item = itemMapper.toItem(itemDtoReq,ownerId);
+        Item item = itemMapper.toItem(itemDtoReq, ownerId);
         User owner = userService.getById(ownerId);
         item.setOwner(owner);
 
@@ -131,7 +131,6 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
             itemDtoRes.setLastBooking(lastNextRecordBooking.get(itemId, false, Long.valueOf(userId)));
         }
 
-
         log.debug(String.valueOf(LogMessages.GET), itemDtoRes);
         return itemDtoRes;
     }
@@ -158,6 +157,13 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         commentRepository.save(comment);
 
         return commentRepository.save(comment);
+    }
+
+
+    public ItemDtoRes removeById1(Long itemId) {
+        itemRepository.deleteById(itemId);
+        return itemMapper.toItemDtoRes(itemRepository.findById(itemId).get());
+
     }
 
 

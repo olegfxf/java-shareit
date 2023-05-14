@@ -18,6 +18,10 @@ import javax.persistence.*;
 @Entity
 @Table(name = "items")
 public class Item extends AbstractModel {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     String name;
 
     String description;

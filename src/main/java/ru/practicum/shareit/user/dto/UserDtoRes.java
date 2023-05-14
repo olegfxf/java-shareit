@@ -3,12 +3,14 @@ package ru.practicum.shareit.user.dto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.user.model.User;
 
 @Setter
 @Getter
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@ToString
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDtoRes {
     Long id;
     String name;
@@ -19,4 +21,5 @@ public class UserDtoRes {
         this.name = user.getName();
         this.email = user.getEmail();
     }
+
 }

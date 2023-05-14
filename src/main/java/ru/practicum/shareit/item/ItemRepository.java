@@ -7,6 +7,7 @@ import ru.practicum.shareit.abstracts.CommonRepository;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ItemRepository extends CommonRepository<Item>, QuerydslPredicateExecutor<Item> {
@@ -15,9 +16,11 @@ public interface ItemRepository extends CommonRepository<Item>, QuerydslPredicat
             " OR    upper(it.description) LIKE upper(concat('%', ?1, '%')) AND it.available = true")
     List<Item> search(String text);
 
- //   boolean existsByIdAndAvailable(Long id, Boolean available);
+    //   boolean existsByIdAndAvailable(Long id, Boolean available);
 
     boolean existsById(Long id);
 
     List<Item> findAllByRequestId(Long requestId);
+
+    Optional<Item> findById(Long id);
 }
