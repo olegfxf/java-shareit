@@ -154,7 +154,6 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         comment.setAuthor(user);
         comment.setItem(item);
         comment.setCreated(LocalDateTime.now());
-        commentRepository.save(comment);
 
         return commentRepository.save(comment);
     }

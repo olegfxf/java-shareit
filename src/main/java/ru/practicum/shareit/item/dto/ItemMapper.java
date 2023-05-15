@@ -22,6 +22,17 @@ public class ItemMapper {
                 .build();
     }
 
+
+    public static Item toItemFromDtoRes(ItemDtoRes itemDtoRes) {
+        return Item.builder()
+                .name(itemDtoRes.getName())
+                .description(itemDtoRes.getDescription())
+                .available(itemDtoRes.getAvailable())
+                //.owner(owner)
+                .requestId(itemDtoRes.getRequestId())
+                .build();
+    }
+
     public ItemDtoRes toItemDtoRes(Item item) {
         ItemDtoRes itemDtoRes = new ItemDtoRes();
         itemDtoRes.setId(item.getId());

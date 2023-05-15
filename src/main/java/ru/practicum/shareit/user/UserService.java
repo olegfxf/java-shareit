@@ -8,11 +8,7 @@ import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.sun.jdi.InternalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.practicum.shareit.abstracts.AbstractServiceImpl;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.messages.HandlerMessages;
@@ -45,7 +41,7 @@ public class UserService extends AbstractServiceImpl<User, UserRepository> {
             User userPatched = applyPatchToUser(patch, user);
             log.debug(String.valueOf(LogMessages.TRY_PATCH), userPatched);
 
-            update(userPatched);
+            userRepository.save(userPatched);
             return new UserDtoRes(userPatched);
         } catch (JsonPatchException | JsonProcessingException e) {
             throw new InternalException(String.valueOf(HandlerMessages.SERVER_ERROR));
@@ -76,16 +72,26 @@ public class UserService extends AbstractServiceImpl<User, UserRepository> {
     }
 
     public UserDtoRes getById1(Long userId) {
-        if (!userRepository.findById(userId).isPresent())
-            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+        return UserMapper.toUserDtoRes(userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND))));
 
-        return UserMapper.toUserDtoRes(userRepository.findById(userId).get());
+//        if (!userRepository.findById(userId).isPresent())
+//            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+//
+//        return UserMapper.toUserDtoRes(userRepository.findById(userId).get());
+    }
+
+    public void validateUser(User user) {
+        if (!userRepository.findById(user.getId()).isPresent())
+            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
     }
 
     public UserDtoRes update1(User user) {
-        if (!userRepository.findById(user.getId()).isPresent())
-            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-
+//        return UserMapper.toUserDtoRes(userRepository.findById(user.getId())
+//                .orElseThrow(() -> new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND))));
+//        if (!userRepository.findById(user.getId()).isPresent())
+//            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+        validateUser(user);
         return UserMapper.toUserDtoRes(userRepository.save(user));
     }
 
