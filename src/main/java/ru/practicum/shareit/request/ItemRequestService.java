@@ -54,15 +54,13 @@ public class ItemRequestService {
         if (!userRepository.findById(userId).isPresent())
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
 
-
         User requester = userRepository.findById(userId).get();
 
         List<ItemRequestDtoForUser> itemRequestDtoPageForUsers = itemRequestRepository.findAllByRequester(requester,
                         PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "created")))
                 .stream().map(e -> ItemRequestMapper.toItemRequestDtoForUser(e,
                         itemRepository.findAllByRequestId(e.getId()))).collect(Collectors.toList());
-//                .map(itemRequest -> ItemRequestMapper.toItemRequestDtoForUser(itemRequest,
-//                        itemRepository.findAllByRequestId(itemRequest.getId())));
+
         log.debug(String.valueOf(LogMessages.GET_ALL_USERS), "предоставлен список запросов пользователя с id " + userId);
         return itemRequestDtoPageForUsers;
     }
@@ -73,10 +71,6 @@ public class ItemRequestService {
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
 
         User requester = userRepository.findById(userId).get();
-
-//        Page<ItemRequestDtoForUser> itemRequestDtoPage = itemRequestRepository.findAllByRequesterIsNot(requester,
-//                        PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created")))
-//                .map(e -> ItemRequestMapper.toItemRequestDtoForUser(e, itemRepository.findAllByRequestId(e.getId())));
 
         List<ItemRequestDtoForUser> itemRequestDtoPageForUsers = itemRequestRepository.findAllByRequesterIsNot(requester,
                         PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created")))

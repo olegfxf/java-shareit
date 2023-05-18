@@ -138,7 +138,8 @@ class ItemControllerTest {
                 .requestId(5L)
                 .build();
 
-        when(itemService.updateItem(anyLong(), any(), anyLong())).thenReturn(itemDtoRes);
+        when(itemService.updateItem(anyLong(), any(), anyLong()))
+                .thenReturn(itemDtoRes);
 
         mvc.perform(patch("/items/{userId}", userId)
                         .content(mapper.writeValueAsString(itemDtoRes))

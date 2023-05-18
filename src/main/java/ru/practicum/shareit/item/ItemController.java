@@ -67,9 +67,9 @@ public class ItemController {
     @PatchMapping(path = "/{itemId}", consumes = "application/json")
     @ResponseBody
     public ItemDtoRes updateItem(@PathVariable Long itemId,
-                                 @RequestBody JsonMergePatch patch,
+                                 @RequestBody ItemDtoReq itemDtoReq,
                                  @RequestHeader("x-sharer-user-id") @NotNull Long userId) {
-        return itemService.updateItem(itemId, patch, userId);
+        return itemService.updateItem(itemId, itemDtoReq, userId);
     }
 
 

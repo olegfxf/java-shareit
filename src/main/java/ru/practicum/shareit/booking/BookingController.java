@@ -62,9 +62,7 @@ public class BookingController {
         if (size < 0 || from < 0)
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
 
-        List<BookingDtoRes> pp = bookingService.getAll(userId, state, from, size);
-        pp.stream().forEach(e -> System.out.println(e.getBooker().getId()));
-        return pp;
+        return bookingService.getAll(userId, state, from, size);
     }
 
     @GetMapping("/owner")

@@ -30,7 +30,8 @@ public class UserService extends AbstractServiceImpl<User, UserRepository> {
     UserRepository userRepository;
 
     @Autowired
-    public UserService(UserRepository repository, UserRepository userRepository) {
+    public UserService(UserRepository repository,
+                       UserRepository userRepository) {
         super(repository);
         this.userRepository = userRepository;
     }

@@ -77,31 +77,27 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
     }
 
     @Transactional
-    public ItemDtoRes updateItem(Long id, JsonMergePatch patch, Long ownerId) {
-        Item item = this.getById(id);
+    public ItemDtoRes updateItem(Long itemId, ItemDtoReq itemDtoReq, Long ownerId) {
+        Item item;
+        try {
+            item = this.getById(itemId);
+        } catch (NotFoundException e) {
+            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+        }
 
         if (!ownerId.equals(item.getOwner().getId())) {
             log.debug(String.valueOf(HandlerMessages.SERVER_ERROR));
             throw new NotFoundException(ExceptionMessages.NOT_FOUND_ID);
         }
 
-        try {
-            Item itemPatched = applyPatchToItem(patch, item);
-            User owner = userService.getById(ownerId);
-            itemPatched.setOwner(owner);
-            log.debug(String.valueOf(LogMessages.TRY_PATCH), itemPatched);
-            return itemMapper.toItemDtoRes(itemRepository.save(itemPatched));
-        } catch (JsonPatchException | JsonProcessingException e) {
-            throw new InternalException(String.valueOf(HandlerMessages.SERVER_ERROR));
-        } catch (NotFoundException e) {
-            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-        }
-    }
+        Item item1 = ItemMapper.toItem(itemDtoReq, ownerId);
 
-    public Item applyPatchToItem(JsonMergePatch patch, Item targetCustomer)
-            throws JsonPatchException, JsonProcessingException {
-        JsonNode patched = patch.apply(new ObjectMapper().convertValue(targetCustomer, JsonNode.class));
-        return new ObjectMapper().treeToValue(patched, Item.class);
+        if (item1.getName() != null) item.setName(item1.getName());
+        if (item1.getDescription() != null) item.setDescription(item1.getDescription());
+        if (item1.getAvailable() != null) item.setAvailable(item1.getAvailable());
+
+        log.debug(String.valueOf(LogMessages.TRY_PATCH), item);
+        return itemMapper.toItemDtoRes(itemRepository.save(item));
     }
 
     public List<ItemDtoRes> getAllByUserId(Long userId) {

@@ -12,9 +12,10 @@ import java.util.stream.Collectors;
 public class ItemMapper {
     public static Item toItem(ItemDtoReq itemDtoReq, Long ownerId) {
         User owner = new User();
-        owner.setId(itemDtoReq.getOwnerId());
+        owner.setId(ownerId);
 
-        return Item.builder().name(itemDtoReq.getName())
+        return Item.builder()
+                .name(itemDtoReq.getName())
                 .description(itemDtoReq.getDescription())
                 .available(itemDtoReq.getAvailable())
                 .owner(owner)

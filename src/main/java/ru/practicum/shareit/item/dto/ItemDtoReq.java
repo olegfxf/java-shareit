@@ -13,6 +13,7 @@ import javax.validation.constraints.Positive;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ItemDtoReq {
     @NotNull
     @NotEmpty(message = ExceptionMessages.EMPTY_NAME)
