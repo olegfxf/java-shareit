@@ -51,41 +51,6 @@ class UserServiceTest {
     @SneakyThrows
     @Test
     void updateCustomer() {
-//        User user = new User();
-//        UserDtoRes userDtoRes = new UserDtoRes(user);
-//
-//        String json = "{\"name\":\"update\",\"email\":\"update@user.com\"}";
-//        System.out.println(json);
-//        final InputStream in = new ByteArrayInputStream(json.getBytes());
-//        //final JsonMergePatch patch = mapper.readValue(in, JsonMergePatch.class);
-////
-////        JsonNode patched = patch.apply(mapper.convertValue(user, JsonNode.class));
-////        final JsonMergePatch patch = mapper.readValue((DataInput) patched, JsonMergePatch.class);
-//
-//        JsonMergePatch mergePatch = Json.cJson.createMergePatch(JSONObject(
-//                .add("work", JSONObject.createObjectBuilder()
-//                        .add("title", "Senior Engineer"))
-//                .build());
-//
-//        System.out.println(patch);
-////        doReturn(expectedUser).
-////                when(userRepository).save(expectedUser);
-//                when(userRepository.findById(1l))
-//                .thenReturn(Optional.of(user));
-//
-//                lenient().when(userService.applyPatchToUser(patch, user))
-//                        .thenReturn(user);
-//
-////        when(userRepository.findById(1l))
-////                .thenReturn(Optional.of(user));
-//
-//        when(userRepository.save(expectedUser))
-//                .thenReturn(expectedUser);
-//
-//        userService.updateCustomer(1l, any());
-//
-////        User actualUser = UserMapper.toUserFromDtoRes(userService
-////                .updateCustomer(userId, any(JsonMergePatch.class)));
     }
 
     @Test
