@@ -70,7 +70,7 @@ public class ItemServiceTest2 {
         user.setName("name");
         user.setEmail("name@mail.ru");
         //  User user1 = new User(1,"name1", "name1@mail.ru");
-        user2Id = 2;
+        user2Id = 2L;
         user2.setId(user2Id);
         user2.setName("name2");
         user2.setEmail("name2@mail.ru");
