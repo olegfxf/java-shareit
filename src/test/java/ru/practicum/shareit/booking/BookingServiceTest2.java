@@ -51,7 +51,7 @@ public class BookingServiceTest2 {
     public void setUp() {
         itemId = 1L;
 
-        userId = 1l;
+        userId = 1L;
         user.setId(userId);
         user.setName("name");
         user.setEmail("name@mail.ru");
