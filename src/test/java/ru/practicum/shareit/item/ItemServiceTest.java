@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import org.hibernate.validator.internal.IgnoreForbiddenApisErrors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,17 +24,6 @@ class ItemServiceTest {
     @Mock
     ItemRepository itemRepository;
 
-//    @Mock
-//    CommentRepository commentRepository;
-//
-//    @Mock
-//    UserRepository userRepository;
-//
-//    @Mock
-//    BookingRepository bookingRepository;
-//
-//    @Mock
-//    Item mockItem;
 
     @Test
     void addItem() {
@@ -43,18 +31,11 @@ class ItemServiceTest {
 
     @Test
     void updateItem() {
-//        List<Item> expectedItems = new ArrayList<>();
-//        when(itemRepository.save(any()))
-//                .thenReturn(expectedItems);
     }
 
 
     @Test
     void getAllByUserId() {
-//        long itemId = 0L;
-//        Item expectedItem = new Item();
-//        when(itemRepository.findAll())
-//                .thenReturn(Optional.of(expectedItem));
     }
 
     @Test
@@ -82,7 +63,7 @@ class ItemServiceTest {
         assertEquals(expectedItem, actualItem);
     }
 
-    @IgnoreForbiddenApisErrors(reason = "all")
+
     @Test
     void addComment() {
 //        long itemId = 0L;

@@ -65,25 +65,6 @@ class BookingServiceTest {
 
     @Test
     void save() {
-//        Long bookerId = 1L;
-//        User booker = Mockito.mock(User.class);
-//        booker = user;
-//        Booking expectedBooking = booking;
-//
-//
-//        when(itemService.getById(booking.getItem().getId()))
-//                .thenReturn(item);
-//        when(userService.getById(bookerId))
-//                .thenReturn(user);
-////        when(any(Long.class).equals(any(Long.class)))
-////                .thenReturn(true);
-////
-////
-//        when(bookingRepository.save(expectedBooking))
-//                .thenReturn(expectedBooking);
-//        Booking actualBooking = BookingMapper.toBookingFromDtoRes(bookingService.save(bookerId, expectedBooking));
-//        assertEquals(expectedBooking, actualBooking);
-
     }
 
     @Test
@@ -92,6 +73,7 @@ class BookingServiceTest {
 
     @Test
     void approveIt() {
+
     }
 
     @Test

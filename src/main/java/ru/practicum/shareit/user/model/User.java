@@ -7,8 +7,7 @@ import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.abstracts.AbstractModel;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Setter
 @Getter
@@ -17,6 +16,10 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "users")
 public class User extends AbstractModel {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     String name;
 
     String email;

@@ -1,10 +1,5 @@
 package ru.practicum.shareit.item;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -14,7 +9,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.messages.LogMessages;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +79,6 @@ public class ItemController {
     public CommentDtoRes addComment(@Valid @RequestBody CommentDtoReq commentDtoReq,
                                     @RequestHeader("x-sharer-user-id") @NotNull Long userId,
                                     @PathVariable Long itemId) {
-        return CommentMapper.toCommentDtoRes(itemService.addComment(CommentMapper.toComment(commentDtoReq), itemId,userId));
+        return CommentMapper.toCommentDtoRes(itemService.addComment(CommentMapper.toComment(commentDtoReq), itemId, userId));
     }
 }

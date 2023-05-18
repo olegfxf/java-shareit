@@ -2,7 +2,6 @@ package ru.practicum.shareit.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -86,10 +85,6 @@ class ItemRequestControllerTest {
                 .build();
     }
 
-
-    @AfterEach
-    void tearDown() {
-    }
 
     @SneakyThrows
     @Test

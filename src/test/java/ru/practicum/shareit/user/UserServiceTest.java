@@ -1,34 +1,22 @@
 package ru.practicum.shareit.user;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.user.dto.UserDtoRes;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInput;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.json.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

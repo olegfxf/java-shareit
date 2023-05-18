@@ -1,23 +1,18 @@
 package ru.practicum.shareit.item;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatchException;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.H2TestProfileJPAConfig;
 import ru.practicum.shareit.ShareItApp;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemDtoReq;
 import ru.practicum.shareit.item.dto.ItemDtoRes;
 import ru.practicum.shareit.item.model.Item;
@@ -30,7 +25,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-//@SpringBootTest
+
 @SpringBootTest(classes = {
         ShareItApp.class,
         H2TestProfileJPAConfig.class})
@@ -45,26 +40,40 @@ public class ItemServiceTest2 {
 
     private final ItemRepository itemRepository;
 
-    // private final ItemRequestRepository;
-
     private final UserService userService;
+
+    private final BookingRepository bookingRepository;
 
     private final ObjectMapper mapper;
 
 
+    long itemId;
+
     long userId;
+    long user2Id;
     User user = new User();
+    User user2 = new User();
+
+    Booking booking;
+
+
     ItemRequest itemRequest;
 
     ItemDtoReq itemDtoReq;
 
     @BeforeEach
     public void setUp() {
+        itemId = 1L;
+
         userId = 1l;
         user.setId(userId);
         user.setName("name");
         user.setEmail("name@mail.ru");
         //  User user1 = new User(1,"name1", "name1@mail.ru");
+        user2Id = 2;
+        user2.setId(user2Id);
+        user2.setName("name2");
+        user2.setEmail("name2@mail.ru");
 
         long itemRequestId = 1L;
         itemRequest = ItemRequest.builder()
@@ -99,87 +108,75 @@ public class ItemServiceTest2 {
         assertEquals(expectedItem.getName(), actualItem.getName());
     }
 
-
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
     @Test
-    void updateItem() throws JsonProcessingException, JsonPatchException {
-//        userService.save(user);
-//        Item item = new Item();
-//        item.setName("name1");
-//        item.setOwner(user);
-//        item.setDescription("description2");
-//        itemRepository.save(item);
-//
-//
-//        String jsonString1 = mapper.writeValueAsString(user);
-//        JsonNode source = mapper.readTree(jsonString1);
+    void updateItem() {
+        userService.save(user);
+        Item item = new Item();
+        item.setName("name1");
+        item.setDescription("description1");
+        item.setOwner(user);
+        itemRepository.save(item);
+        itemDtoReq.setDescription("descriptionNew");
 
-//        user.setEmail("name1@mail.ru");
-//
-//        String jsonString2 = mapper.writeValueAsString(user);
-//        JsonNode target = mapper.readTree(jsonString2);
-//
-//        JsonNode patch = JsonDiff.asJson(source, target);
-//
-//        itemService.updateItem(userId, JsonMergePatch.fromJson(patch), userId);
+        ItemDtoRes actualItemDtoRes = itemService.updateItem(itemId, itemDtoReq, userId);
 
-
-//
-//        JsonValue jsonSource = Json.createValue(jsonString1);
-//        System.out.println("jsonString = " + jsonString1);
-//
-//        user.setEmail("name1@mail.ru");
-//        String jsonTarget = mapper.writeValueAsString(user);
-//        JsonValue jsonTargetV = Json.createValue(jsonTarget);
-//        javax.json.JsonMergePatch jsonMergePatchST = Json.createMergeDiff(jsonSource, jsonTargetV);
-//        JsonValue jsonResult = jsonMergePatchST.apply(jsonSource);
-//        System.out.println("jsonResult =  " + jsonResult);
-//
-//
-//        itemService.updateItem(userId, jsonMergePatchST, userId);
-
-
-//        JsonValue s1 = Json.createValue(jsonString);
-//        System.out.println("s1 = " + s1);
-//        JsonValue t1 = Json.createValue("{\"email\":\"name1@mail.ru\"}");
-//        JsonMergePatch jsonMergePatch1 = Json.createMergeDiff(s1, t1);
-//        System.out.println("jsonMergePatch1 = " + jsonMergePatch1);
-//        JsonValue jsonValue1 = jsonMergePatch1.apply(s1);
-//        System.out.println("jsonValue1 = " + jsonValue1);
-
-
-//        JsonValue source = Json.createValue("{\"colour\":\"blue\"}");
-//        JsonValue target = Json.createValue("{\"colour\":\"red\"}");
-//        JsonMergePatch jsonMergePatch = Json.createMergeDiff(source, target);
-//        JsonValue jsonValue = jsonMergePatch.apply(source);
-//        System.out.println(jsonValue);
-
-//        List<Item> expectedItems = new ArrayList<>();
-//        when(itemRepository.save(any()))
-//                .thenReturn(expectedItems);
+        assertEquals("descriptionNew", actualItemDtoRes.getDescription());
     }
 
     @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
     @Test
     void getAllByUserId() {
         userService.save(user);
+
         Item item = new Item();
-        item.setName("name1");
+        item.setName("nameItem");
         item.setOwner(user);
-        item.setDescription("description2");
+        item.setDescription("descriptionItem");
         itemRepository.save(item);
 
         List<ItemDtoRes> items = itemService.getAllByUserId(userId);
         assertEquals(1, items.size());
     }
 
-//    @AfterEach
-//    void qqq()
-//    {
-//        itemService.removeALL();
-//        itemRepository.deleteAll();
-//        userService.removeALL();
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+    @Test
+    void addComment() {
+//        userService.save(user);
+//        System.out.println(userService.getAll());
 //
-//    }
+//        System.out.println(user2);
+//        userService.save(user2);
+//        System.out.println(userService.getAll());
+//
+//        Item item = new Item();
+//        item.setName("nameItem");
+//        item.setOwner(user2);
+//        item.setDescription("descriptionItem");
+//        itemRepository.save(item);
+//
+//        Comment expectedComment = new Comment();
+//        expectedComment.setId(1L);
+//        expectedComment.setItem(item);
+//        user.setId(userId);
+//        expectedComment.setAuthor(user);
+//        expectedComment.setCreated(LocalDateTime.now());
+//        expectedComment.setText("text");
+//
+//        booking = Booking.builder()
+//                .start(LocalDateTime.of(2023, 6, 1, 0, 0))
+//                .end((LocalDateTime.of(2024, 2, 1, 1, 1)))
+//                .status(Status.APPROVED)
+//                .booker(user)
+//                .item(item)
+//                .id(1L)
+//                .build();
+//
+//        bookingRepository.save(booking);
+//
+//        Comment comment = itemService.addComment(expectedComment, itemId, userId);
+
+    }
 
 
 }
