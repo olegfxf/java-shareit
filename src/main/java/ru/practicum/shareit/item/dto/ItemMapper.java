@@ -61,14 +61,14 @@ public class ItemMapper {
         return itemDtoRes;
     }
 
-    public static ItemForRequest toItemRequestForUserDto(Item item)  {
+    public static ItemForRequest toItemRequestForUserDto(Item item) {
         return ItemForRequest.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .requestId(item.getRequestId())
-             //   .ownerId(item.getOwner().getId())
+                //   .ownerId(item.getOwner().getId())
                 .build();
     }
 

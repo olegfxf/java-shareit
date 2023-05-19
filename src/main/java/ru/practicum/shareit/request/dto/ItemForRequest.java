@@ -20,5 +20,4 @@ public class ItemForRequest {
 
     Long requestId;
 
- //   Long ownerId;
 }

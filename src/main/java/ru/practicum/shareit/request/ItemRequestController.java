@@ -40,9 +40,9 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDtoForUser> getAllForUser(@RequestParam(value = "from", defaultValue = "0") @Positive  @Min(0) Integer from,
-                                              @RequestParam(value = "size", defaultValue = "20") @Positive @Min(2) Integer size,
-                                              @RequestHeader("x-sharer-user-id") @NotNull Long userId) {
+    public List<ItemRequestDtoForUser> getAllForUser(@RequestParam(value = "from", defaultValue = "0") @Positive @Min(0) Integer from,
+                                                     @RequestParam(value = "size", defaultValue = "20") @Positive @Min(2) Integer size,
+                                                     @RequestHeader("x-sharer-user-id") @NotNull Long userId) {
         log.debug(String.valueOf(LogMessages.TRY_GET_ALL), "просмотр запросов вещей всех пользователей");
         return itemRequestService.getAllForUser(from, size, userId);
     }

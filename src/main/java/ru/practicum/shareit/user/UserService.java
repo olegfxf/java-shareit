@@ -1,11 +1,5 @@
 package ru.practicum.shareit.user;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import com.sun.jdi.InternalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +7,7 @@ import ru.practicum.shareit.abstracts.AbstractServiceImpl;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.messages.HandlerMessages;
 import ru.practicum.shareit.messages.LogMessages;
+import ru.practicum.shareit.user.dto.UserDtoReq;
 import ru.practicum.shareit.user.dto.UserDtoRes;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -36,26 +31,18 @@ public class UserService extends AbstractServiceImpl<User, UserRepository> {
         this.userRepository = userRepository;
     }
 
-    public UserDtoRes updateCustomer(Long id, JsonMergePatch patch) {
-        try {
-            User user = getById(id);
-            User userPatched = applyPatchToUser(patch, user);
-            log.debug(String.valueOf(LogMessages.TRY_PATCH), userPatched);
-
-            userRepository.save(userPatched);
-            return new UserDtoRes(userPatched);
-        } catch (JsonPatchException | JsonProcessingException e) {
-            throw new InternalException(String.valueOf(HandlerMessages.SERVER_ERROR));
-        } catch (NotFoundException e) {
+    public UserDtoRes updateCustomer(Long id, UserDtoReq userDtoReq) {
+        if (!userRepository.existsById(id))
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-        }
+
+        User user = getById(id);
+        if (userDtoReq.getName() != null) user.setName(userDtoReq.getName());
+        if (userDtoReq.getEmail() != null) user.setEmail(userDtoReq.getEmail());
+
+        log.debug(String.valueOf(LogMessages.TRY_PATCH), userDtoReq);
+        return UserMapper.toUserDtoRes(userRepository.save(user));
     }
 
-    private User applyPatchToUser(
-            JsonMergePatch patch, User targetCustomer) throws JsonPatchException, JsonProcessingException {
-        JsonNode patched = patch.apply(new ObjectMapper().convertValue(targetCustomer, JsonNode.class));
-        return new ObjectMapper().treeToValue(patched, User.class);
-    }
 
     public UserDtoRes save1(User user) {
         return new UserDtoRes(userRepository.save(user));

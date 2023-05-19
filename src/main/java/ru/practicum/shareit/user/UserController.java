@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user;
 
-import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -62,8 +61,9 @@ public class UserController {
 
     @PatchMapping(path = "/{id}", consumes = "application/json")
     @ResponseBody
-    public UserDtoRes updateCustomer(@PathVariable Long id, @RequestBody JsonMergePatch patch) {
-        return userService.updateCustomer(id, patch);
+    public UserDtoRes updateCustomer(@PathVariable Long id,
+                                     @RequestBody UserDtoReq userDtoReq) {
+        return userService.updateCustomer(id, userDtoReq);
     }
 
 

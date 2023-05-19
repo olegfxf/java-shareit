@@ -116,7 +116,7 @@ public class BookingService {
 
         switch (State.valueOf(state)) {
             case ALL:
-                 return bookingRepository.findAllByBookerOrderByIdDesc(userService.getById(userId), pageable)
+                return bookingRepository.findAllByBookerOrderByIdDesc(userService.getById(userId), pageable)
                         .stream().map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
             case CURRENT:
                 return bookingRepository.currentTimeBooker(userId, LocalDateTime.now())
