@@ -28,23 +28,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("test")
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class BookingServiceTest2 {
+public class BookingServiceTestJUnit {
 
     private final ItemRepository itemRepository;
-
 
     private final UserService userService;
 
     private final BookingService bookingService;
 
-
     long itemId;
-
     long userId;
     long user2Id;
     User user = new User();
     User user2 = new User();
-
     Booking booking;
 
     @BeforeEach

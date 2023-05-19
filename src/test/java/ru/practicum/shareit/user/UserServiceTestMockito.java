@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,7 @@ import static org.mockito.Mockito.*;
 
 @Component
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class UserServiceTestMockito {
 
     @InjectMocks
     UserService userService;
@@ -33,8 +32,6 @@ class UserServiceTest {
     @Mock
     UserRepository userRepository;
 
-    @Mock
-    ObjectMapper mapper;
 
     User expectedUser;
 

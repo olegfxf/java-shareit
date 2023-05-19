@@ -23,8 +23,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,24 +32,37 @@ class BookingControllerTest {
     @Autowired
     ObjectMapper mapper;
 
-    @MockBean
-    private BookingService bookingService;
-
     @Autowired
     private MockMvc mvc;
 
+    @MockBean
+    private BookingService bookingService;
+
     private BookingDtoRes bookingDtoRes;
+
+    Long userId;
+
+    Long bookingId;
 
 
     @BeforeEach
     void setUp() {
+        userId = 1L;
+        bookingId = 1L;
+        Item item = new Item();
+        item.setId(1L);
+        item.setName("itemName");
+        User booker = new User();
+        booker.setId(1L);
+        booker.setName("bookerName");
+
         bookingDtoRes = BookingDtoRes.builder()
-                .id(1)
-                .start(LocalDateTime.of(2023, 1, 1, 0, 0))
-                .end(LocalDateTime.of(2023, 2, 1, 0, 0))
-                .item(new Item())
-                .booker(new User())
-                .status(Status.APPROVED)
+                .id(1L)
+                .start(LocalDateTime.of(2023, 05, 19, 10, 10))
+                .end(LocalDateTime.of(2023, 06, 19, 10, 10))
+                .item(item)
+                .booker(booker)
+                .status(Status.WAITING)
                 .build();
     }
 
@@ -73,7 +85,7 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.end", is(bookingDtoRes.getEnd().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))))
                 .andExpect(jsonPath("$.item.id", is(bookingDtoRes.getItem().getId()), Long.class))
                 .andExpect(jsonPath("$.item.name", is(bookingDtoRes.getItem().getName())))
-                .andExpect(jsonPath("$.booker.id", is(bookingDtoRes.getBooker().getId())))
+                .andExpect(jsonPath("$.booker.id", is(bookingDtoRes.getBooker().getId()), Long.class))
                 .andExpect(jsonPath("$.booker.name", is(bookingDtoRes.getBooker().getName())))
                 .andExpect(jsonPath("$.status", is(bookingDtoRes.getStatus().toString())));
     }
@@ -81,27 +93,25 @@ class BookingControllerTest {
     @SneakyThrows
     @Test
     void approveIt() {
-//        Long userId = 1L;
-//        Long bookingId = 1L;
-//        boolean approved = true;
-//        lenient().when(bookingService.approveIt(bookingId, userId, approved))
-//                .thenReturn(bookingDtoRes);
-//
-//        mvc.perform(patch("/bookings/bookingId", bookingId)
-//                        .content(mapper.writeValueAsString(bookingDtoRes))
-//                        .header("x-sharer-user-id", userId)
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.id", is(bookingDtoRes.getId()), Long.class))
-//                .andExpect(jsonPath("$.start", is(bookingDtoRes.getStart().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))))
-//                .andExpect(jsonPath("$.end", is(bookingDtoRes.getEnd().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))))
-//                .andExpect(jsonPath("$.item.id", is(bookingDtoRes.getItem().getId()), Long.class))
-//                .andExpect(jsonPath("$.item.name", is(bookingDtoRes.getItem().getName())))
-//                .andExpect(jsonPath("$.booker.id", is(bookingDtoRes.getBooker().getId())))
-//                .andExpect(jsonPath("$.booker.name", is(bookingDtoRes.getBooker().getName())))
-//                .andExpect(jsonPath("$.status", is(bookingDtoRes.getStatus().toString())));
+        when(bookingService.approveIt(any(Long.class), any(Long.class), any(Boolean.class)))
+                .thenReturn(bookingDtoRes);
+
+        mvc.perform(patch("/bookings/1", bookingId)
+                        .content(mapper.writeValueAsString(bookingDtoRes))
+                        .header("x-sharer-user-id", userId)
+                        .queryParam("approved", "true")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(bookingDtoRes.getId()), Long.class))
+                .andExpect(jsonPath("$.start", is(bookingDtoRes.getStart().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))))
+                .andExpect(jsonPath("$.end", is(bookingDtoRes.getEnd().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))))
+                .andExpect(jsonPath("$.item.id", is(bookingDtoRes.getItem().getId()), Long.class))
+                .andExpect(jsonPath("$.item.name", is(bookingDtoRes.getItem().getName())))
+                .andExpect(jsonPath("$.booker.id", is(bookingDtoRes.getBooker().getId()), Long.class))
+                .andExpect(jsonPath("$.booker.name", is(bookingDtoRes.getBooker().getName())))
+                .andExpect(jsonPath("$.status", is(bookingDtoRes.getStatus().toString())));
 
     }
 

@@ -25,13 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class BookingServiceTest {
+class BookingServiceTestMockito {
     @InjectMocks
     BookingService bookingService;
-
     @Mock
     BookingRepository bookingRepository;
-
     @Mock
     UserService userService;
     @Mock
@@ -107,7 +105,6 @@ class BookingServiceTest {
 
         assertEquals(expectedBookings, actualBookings);
     }
-
 
     @Test
     void ownerGet() {

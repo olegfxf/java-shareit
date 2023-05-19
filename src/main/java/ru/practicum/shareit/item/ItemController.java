@@ -79,6 +79,6 @@ public class ItemController {
     public CommentDtoRes addComment(@Valid @RequestBody CommentDtoReq commentDtoReq,
                                     @RequestHeader("x-sharer-user-id") @NotNull Long userId,
                                     @PathVariable Long itemId) {
-        return CommentMapper.toCommentDtoRes(itemService.addComment(CommentMapper.toComment(commentDtoReq), itemId, userId));
+        return itemService.addComment(CommentMapper.toComment(commentDtoReq), itemId, userId);
     }
 }

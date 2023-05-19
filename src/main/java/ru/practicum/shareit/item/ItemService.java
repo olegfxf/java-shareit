@@ -9,9 +9,7 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.LastNextRecordBooking;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
-import ru.practicum.shareit.item.dto.ItemDtoReq;
-import ru.practicum.shareit.item.dto.ItemDtoRes;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.messages.ExceptionMessages;
@@ -126,7 +124,7 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
     }
 
     @Transactional
-    public Comment addComment(Comment comment1, Long itemId, Long userId) {
+    public CommentDtoRes addComment(Comment comment1, Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId).get();
         User user = userRepository.findById(userId).get();
 
@@ -145,7 +143,7 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         comment.setItem(item);
         comment.setCreated(LocalDateTime.now());
 
-        return commentRepository.save(comment);
+        return CommentMapper.toCommentDtoRes(commentRepository.save(comment));
     }
 
 

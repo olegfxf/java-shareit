@@ -12,11 +12,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.item.dto.CommentDtoRes;
 import ru.practicum.shareit.item.dto.ItemDtoRes;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,10 +28,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+//import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = ItemController.class)
 class ItemControllerTest {
@@ -49,6 +52,8 @@ class ItemControllerTest {
 
     private ItemDtoRes itemDtoRes;
 
+    private CommentDtoRes commentDtoRes;
+
     @BeforeEach
     void setUp() {
         itemDtoRes = ItemDtoRes.builder()
@@ -58,6 +63,14 @@ class ItemControllerTest {
                 .available(true)
                 .ownerId(2L)
                 .requestId(5L)
+                .build();
+
+
+        commentDtoRes = CommentDtoRes.builder()
+                .id(1L)
+                .text("text")
+                .authorName("autorName")
+                .created(LocalDateTime.of(2023, 5, 19, 1, 1))
                 .build();
     }
 
@@ -184,7 +197,6 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.name", is(itemDtoRes.getName())))
                 .andExpect(jsonPath("$.description", is(itemDtoRes.getDescription())))
                 .andExpect(jsonPath("$.available", is(itemDtoRes.getAvailable())));
-        //.andDo(print());
     }
 
     @SneakyThrows
@@ -210,10 +222,39 @@ class ItemControllerTest {
     @SneakyThrows
     @Test
     void search() {
+        List<ItemDtoRes> itemDtoResList = new ArrayList<>();
+        itemDtoResList.add(itemDtoRes);
+        when(itemService.searchText(any(String.class)))
+                .thenReturn(itemDtoResList);
+
+        mvc.perform(get("/items/search?text=дрель")
+                        .content(mapper.writeValueAsString(itemDtoResList))
+                        .header("x-sharer-user-id", 1)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(jsonPath("$.[0].id", is(itemDtoResList.get(0).getId()), Long.class))
+                .andExpect(jsonPath("$.[0].name", is(itemDtoResList.get(0).getName())))
+                .andExpect(jsonPath("$.[0].description", is(itemDtoResList.get(0).getDescription())));
     }
 
     @SneakyThrows
     @Test
     void addComment() {
+        when(itemService.addComment(any(), any(Long.class), any(Long.class)))
+                .thenReturn(commentDtoRes);
+
+        mvc.perform(post("/items/1/comment")
+                        .content(mapper.writeValueAsString(commentDtoRes))
+                        .header("x-sharer-user-Id", 1)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(commentDtoRes.getId()), Long.class))
+                .andExpect(jsonPath("$.text", is(commentDtoRes.getText())))
+                .andExpect(jsonPath("$.authorName", is(commentDtoRes.getAuthorName())));
     }
 }

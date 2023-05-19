@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 //@TestPropertySource(properties = { "db.name=test"})
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 
-public class ItemServiceTest2 {
+public class ItemServiceTestJUnit {
 
     private final ItemService itemService;
 
@@ -48,17 +48,12 @@ public class ItemServiceTest2 {
 
 
     long itemId;
-
     long userId;
     long user2Id;
     User user = new User();
     User user2 = new User();
-
     Booking booking;
-
-
     ItemRequest itemRequest;
-
     ItemDtoReq itemDtoReq;
 
     @BeforeEach
