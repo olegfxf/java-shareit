@@ -6,8 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -173,7 +171,7 @@ public class BookingServiceTest {
     void getAll() {
 //        int from = 4;
 //        int size = 2;
-  //      String state = "ALL";
+        //      String state = "ALL";
         List<BookingDtoRes> expectedBookings = new ArrayList<>();
         expectedBookings.add(BookingMapper.toBookingDtoRes(booking));
 //        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
@@ -263,8 +261,6 @@ public class BookingServiceTest {
         assertEquals(user2, actual.get(0).getBooker());
 
     }
-
-
 
 
 }
