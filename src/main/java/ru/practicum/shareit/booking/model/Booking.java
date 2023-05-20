@@ -8,8 +8,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -32,12 +30,12 @@ public class Booking extends AbstractModel {
     private Long id;
 
     @JsonFormat
-    @FutureOrPresent
+    //@FutureOrPresent
     @Column(name = "start_date")
     LocalDateTime start;
 
     @JsonFormat
-    @Future
+    //@Future
     @Column(name = "end_date")
     LocalDateTime end;
 
