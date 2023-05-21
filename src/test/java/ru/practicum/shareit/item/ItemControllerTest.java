@@ -131,7 +131,6 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.available", is(itemDtoRes.getAvailable())));
     }
 
-
     @SneakyThrows
     @Test
     void removeById() {
