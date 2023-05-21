@@ -51,7 +51,7 @@ class ItemRequestServiceTest {
     }
 
     @Test
-    void getRequester(){
+    void getRequester() {
         Long userId = 1L;
         when(userRepository.findById(userId))
                 .thenReturn(Optional.empty());
