@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.exceptions.UserNotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -22,6 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -46,6 +48,15 @@ class ItemRequestServiceTest {
                 .requester(new User())
                 .created(LocalDateTime.of(2023, 2, 1, 0, 0))
                 .build();
+    }
+
+    @Test
+    void getRequester(){
+        Long userId = 1L;
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class,
+                () -> itemRequestService.getRequester(userId));
     }
 
     @Test
@@ -115,6 +126,18 @@ class ItemRequestServiceTest {
 
         assertEquals(expectedItemRequestDtoForUser, actualItemRequestDtoForUser);
     }
+
+//    @Test
+//    void getItemRequest(){
+//        Long itemRequestId = 1L;
+//        Optional<ItemRequest> itemRequest = Optional.of(new ItemRequest());
+//        when(itemRequestRepository.findById(itemRequestId))
+//                .thenReturn(itemRequest);
+//
+//        Optional<ItemRequest> itemRequest1 = itemRequestService.getItemRequest(itemRequestId);
+//
+//        assertEquals(itemRequest, itemRequest1);
+//    }
 
     @Test
     void getById() {

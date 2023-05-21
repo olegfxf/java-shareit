@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.UserNotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.messages.HandlerMessages;
 import ru.practicum.shareit.messages.LogMessages;
@@ -38,11 +39,12 @@ public class ItemRequestService {
         this.userRepository = userRepository;
     }
 
-    public ItemRequestDto addItemRequest(Long userId, ItemRequest itemRequest) {
-        if (!userRepository.findById(userId).isPresent())
-            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+    public User getRequester(Long userId) {
+        return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    }
 
-        User requester = userRepository.findById(userId).get();
+    public ItemRequestDto addItemRequest(Long userId, ItemRequest itemRequest) {
+        User requester = getRequester(userId);
         itemRequest.setRequester(requester);
         itemRequest.setCreated(LocalDateTime.now());
 
@@ -51,11 +53,7 @@ public class ItemRequestService {
     }
 
     public List<ItemRequestDtoForUser> getAllForOwner(Long userId) {
-        if (!userRepository.findById(userId).isPresent())
-            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-
-        User requester = userRepository.findById(userId).get();
-
+        User requester = getRequester(userId);
         List<ItemRequestDtoForUser> itemRequestDtoPageForUsers = itemRequestRepository.findAllByRequester(requester,
                         PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "created")))
                 .stream().map(e -> ItemRequestMapper.toItemRequestDtoForUser(e,
@@ -67,11 +65,7 @@ public class ItemRequestService {
 
 
     public List<ItemRequestDtoForUser> getAllForUser(Integer from, Integer size, Long userId) {
-        if (!userRepository.findById(userId).isPresent())
-            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-
-        User requester = userRepository.findById(userId).get();
-
+        User requester = getRequester(userId);
         List<ItemRequestDtoForUser> itemRequestDtoPageForUsers = itemRequestRepository.findAllByRequesterIsNot(requester,
                         PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created")))
                 .stream().map(e -> ItemRequestMapper.toItemRequestDtoForUser(e, itemRepository.findAllByRequestId(e.getId()))).collect(Collectors.toList());
@@ -79,12 +73,19 @@ public class ItemRequestService {
         return itemRequestDtoPageForUsers;
     }
 
-    public ItemRequestDtoForUser getById(Long itemRequestId, Long userId) {
+    public void getItemRequest(Long itemRequestId) {
         if (!itemRequestRepository.findById(itemRequestId).isPresent())
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+    }
 
-        if (!userRepository.findById(userId).isPresent())
-            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+    public ItemRequestDtoForUser getById(Long itemRequestId, Long userId) {
+//        if (!itemRequestRepository.findById(itemRequestId).isPresent())
+//            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+//
+//        if (!getItemRequest(itemRequestId).isPresent())
+        getItemRequest(itemRequestId);
+
+        getRequester(userId);
 
         return ItemRequestMapper.toItemRequestDtoForUser(itemRequestRepository.findById(itemRequestId).get(),
                 itemRepository.findAllByRequestId(itemRequestId));
