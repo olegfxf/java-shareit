@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.abstracts.AbstractServiceImpl;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -102,6 +103,7 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
 
     public List<ItemDtoRes> searchText(String text) {
         List<Item> items = itemRepository.search(text);
+
         log.debug(String.valueOf(LogMessages.TRY_GET_SEARCH));
         return items.stream().map(e -> itemMapper.toItemDtoRes(e)).collect(toList());
     }
@@ -123,20 +125,29 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         return itemDtoRes;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public CommentDtoRes addComment(Comment comment1, Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId).get();
         User user = userRepository.findById(userId).get();
 
-        if (!bookingRepository.existsBookingByBookerAndItemAndStatus(user, item, APPROVED))
-            throw new ValidationException(String.valueOf(HandlerMessages.VALID));
 
+        if (!bookingRepository.existsBookingByBookerAndItemAndStatus(user, item, APPROVED)) {
+            throw new ValidationException(String.valueOf(HandlerMessages.VALID));
+        }
+
+        System.out.println(" @@@!");
+        bookingRepository.findByBookerAndItemAndEndBefore(user, item, LocalDateTime.now()).stream().forEach(System.out::println);
         if (bookingRepository.findByBookerAndItemAndEndBefore(user, item, LocalDateTime.now()).isEmpty())
             throw new ValidationException(String.valueOf((HandlerMessages.VALID)));
 
+
+        System.out.println(item.getOwner().getId() + " @@@ " + userId);
+        System.out.println(item.getOwner() + "PPP");
         if (item.getOwner().getId().equals(userId)) {
+            System.out.println("!!!!!!!");
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
         }
+
 
         Comment comment = comment1;
         comment.setAuthor(user);

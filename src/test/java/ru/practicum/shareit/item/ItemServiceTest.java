@@ -118,11 +118,12 @@ public class ItemServiceTest {
         assertThrows(NotFoundException.class, () -> itemService
                 .addItem(itemDtoReq, 5L));
 
-        itemDtoReq.setName("name5");
+        item.setName("name5");
         itemRepository.save(item);
         assertThrows(NotFoundException.class, () -> itemService
                 .addItem(itemDtoReq, 5L));
     }
+
 
     @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
     @Test
@@ -150,7 +151,7 @@ public class ItemServiceTest {
     @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
     @Test
     void searchText() {
-        List<Item> items = itemRepository.search("nameI");
+        List<ItemDtoRes> items = itemService.searchText("nameI");
         assertEquals("nameItem", items.get(0).getName());
     }
 
@@ -175,9 +176,25 @@ public class ItemServiceTest {
         expectedComment.setCreated(LocalDateTime.now());
         expectedComment.setText("text");
 
+        userId = 1L;
+        user.setId(userId);
+        user.setName("name");
+        user.setEmail("name@mail.ru");
+        userService.getAll1();
         userService.save(user);
         userService.save(user2);
+//
 
+//        item = new Item();
+//        item.setName("nameItem");
+//        item.setOwner(user);
+//        item.setDescription("descriptionItem");
+//        itemRepository.deleteAll();
+//        itemRepository.save(item);
+
+        //  userService.save(user);
+//        userService.save(user2);
+//
         item = new Item();
         item.setName("nameItem");
         item.setDescription("descriptionItem");
@@ -197,26 +214,115 @@ public class ItemServiceTest {
 
         System.out.println(item.getId());
         System.out.println(user.getId());
+        System.out.println("JJJJ");
         bookingRepository.findAll().stream().forEach(System.out::println);
 
         CommentDtoRes commentDtoRes = itemService.addComment(expectedComment, item.getId(), user.getId());
         assertEquals("text", commentDtoRes.getText());
 
+    }
 
-        booking.setStatus(Status.WAITING);
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+    @Test
+    void addCommentPlus() {
+        Comment expectedComment = new Comment();
+        expectedComment.setId(1L);
+        expectedComment.setItem(item);
+        expectedComment.setAuthor(user);
+        expectedComment.setCreated(LocalDateTime.now());
+        expectedComment.setText("text");
+
+        userId = 1L;
+        user.setId(userId);
+        user.setName("name");
+        user.setEmail("name@mail.ru");
+        userService.getAll1();
+        userService.save(user);
+        userService.save(user2);
+//
+
+//        item = new Item();
+//        item.setName("nameItem");
+//        item.setOwner(user);
+//        item.setDescription("descriptionItem");
+//        itemRepository.deleteAll();
+//        itemRepository.save(item);
+
+        //  userService.save(user);
+//        userService.save(user2);
+//
+        item = new Item();
+        item.setName("nameItem");
+        item.setDescription("descriptionItem");
+        item.setAvailable(true);
+        item.setOwner(user2);
+        itemRepository.save(item);
+
+        booking = Booking.builder()
+                .start(LocalDateTime.of(2023, 4, 1, 0, 0))
+                .end((LocalDateTime.of(2023, 6, 1, 1, 1)))
+                .status(Status.APPROVED)
+                .booker(user)
+                .item(item)
+                .build();
+
         bookingRepository.save(booking);
+
+        System.out.println(item.getId());
+        System.out.println(user.getId());
+        System.out.println("JJJJ");
+        bookingRepository.findAll().stream().forEach(System.out::println);
+
+
         assertThrows(ValidationException.class, () -> itemService
                 .addComment(expectedComment, item.getId(), user.getId()));
 
 
-        booking.setEnd(LocalDateTime.of(2023, 6, 1, 1, 1));
-        bookingRepository.save(booking);
-        assertThrows(ValidationException.class, () -> itemService
-                .addComment(expectedComment, item.getId(), user.getId()));
+    }
 
 
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+    @Test
+    void addCommentPlus2() {
+        Comment expectedComment = new Comment();
+        expectedComment.setId(1L);
+        expectedComment.setItem(item);
+        expectedComment.setAuthor(user);
+        expectedComment.setCreated(LocalDateTime.now());
+        expectedComment.setText("text");
+
+        userId = 1L;
+        user.setId(userId);
+        user.setName("name");
+        user.setEmail("name@mail.ru");
+        userService.getAll1();
+
+        userService.save(user);
+        //  userService.save(user2);
+
+        item = new Item();
+        item.setName("nameItem");
+        item.setDescription("descriptionItem");
+        item.setAvailable(true);
         item.setOwner(user);
         itemRepository.save(item);
+
+        booking = Booking.builder()
+                .start(LocalDateTime.of(2023, 4, 1, 0, 0))
+                .end((LocalDateTime.of(2023, 5, 1, 1, 1)))
+                .status(Status.APPROVED)
+                .booker(user)
+                .item(item)
+                .build();
+
+        bookingRepository.save(booking);
+
+        System.out.println(item.getId());
+        System.out.println(user.getId());
+        System.out.println("JJJJ");
+        bookingRepository.findAll().stream().forEach(System.out::println);
+
+
         assertThrows(ValidationException.class, () -> itemService
                 .addComment(expectedComment, item.getId(), user.getId()));
     }
