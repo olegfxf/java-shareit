@@ -73,17 +73,16 @@ public class ItemRequestService {
         return itemRequestDtoPageForUsers;
     }
 
-    public void getItemRequest(Long itemRequestId) {
-        if (!itemRequestRepository.findById(itemRequestId).isPresent())
-            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-    }
+//    public void getItemRequest(Long itemRequestId) {
+//        if (itemRequestRepository.findById(itemRequestId).isEmpty())
+//            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+//    }
 
     public ItemRequestDtoForUser getById(Long itemRequestId, Long userId) {
-//        if (!itemRequestRepository.findById(itemRequestId).isPresent())
-//            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-//
-//        if (!getItemRequest(itemRequestId).isPresent())
-        getItemRequest(itemRequestId);
+        if (!itemRequestRepository.findById(itemRequestId).isPresent())
+            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+
+//        getItemRequest(itemRequestId);
 
         getRequester(userId);
 

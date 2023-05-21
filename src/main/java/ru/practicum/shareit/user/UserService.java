@@ -62,24 +62,11 @@ public class UserService extends AbstractServiceImpl<User, UserRepository> {
     public UserDtoRes getById1(Long userId) {
         return UserMapper.toUserDtoRes(userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND))));
-
-//        if (!userRepository.findById(userId).isPresent())
-//            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-//
-//        return UserMapper.toUserDtoRes(userRepository.findById(userId).get());
-    }
-
-    public void validateUser(User user) {
-        if (!userRepository.findById(user.getId()).isPresent())
-            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
     }
 
     public UserDtoRes update1(User user) {
-//        return UserMapper.toUserDtoRes(userRepository.findById(user.getId())
-//                .orElseThrow(() -> new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND))));
-//        if (!userRepository.findById(user.getId()).isPresent())
-//            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-        validateUser(user);
+        if (!userRepository.findById(user.getId()).isPresent())
+            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
         return UserMapper.toUserDtoRes(userRepository.save(user));
     }
 

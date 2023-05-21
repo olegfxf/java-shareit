@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -130,13 +132,14 @@ class ItemRequestServiceTest {
 //    @Test
 //    void getItemRequest(){
 //        Long itemRequestId = 1L;
-//        Optional<ItemRequest> itemRequest = Optional.of(new ItemRequest());
+//        ItemRequest itemRequest = new ItemRequest();
 //        when(itemRequestRepository.findById(itemRequestId))
-//                .thenReturn(itemRequest);
+//                .thenReturn(Optional.empty());
 //
-//        Optional<ItemRequest> itemRequest1 = itemRequestService.getItemRequest(itemRequestId);
+//        itemRequestService.getItemRequest(itemRequestId);
 //
-//        assertEquals(itemRequest, itemRequest1);
+//        assertThrows(Exception.class,
+//                () -> itemRequestService.getItemRequest(itemRequestId));
 //    }
 
     @Test

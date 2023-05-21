@@ -36,9 +36,6 @@ public class ErrorsHandler {
     public Map<String, String> handlerNotFoundException1(final UserNotFoundException ex) {
         log.info(String.valueOf(HandlerMessages.ERROR_404), ex.getMessage());
         return Map.of(String.valueOf(HandlerMessages.NOT_FOUND), ex.getMessage());
-//        ErrorResponse response = new ErrorResponse();
-//        response.setMessage(ex.getMessage());
-//        return response;
     }
 
     @ExceptionHandler
