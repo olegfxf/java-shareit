@@ -59,6 +59,7 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         if (!userService.getAll().stream().anyMatch(e -> ownerId.equals(e.getId()))) {
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
         }
+
         if (itemRepository.findAll().stream().anyMatch(e -> itemDtoReq.getName().equals(e.getName())))
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
 
@@ -130,24 +131,15 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         Item item = itemRepository.findById(itemId).get();
         User user = userRepository.findById(userId).get();
 
-
         if (!bookingRepository.existsBookingByBookerAndItemAndStatus(user, item, APPROVED)) {
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
         }
 
-        System.out.println(" @@@!");
-        bookingRepository.findByBookerAndItemAndEndBefore(user, item, LocalDateTime.now()).stream().forEach(System.out::println);
         if (bookingRepository.findByBookerAndItemAndEndBefore(user, item, LocalDateTime.now()).isEmpty())
             throw new ValidationException(String.valueOf((HandlerMessages.VALID)));
 
-
-        System.out.println(item.getOwner().getId() + " @@@ " + userId);
-        System.out.println(item.getOwner() + "PPP");
-        if (item.getOwner().getId().equals(userId)) {
-            System.out.println("!!!!!!!");
+        if (item.getOwner().getId().equals(userId))
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
-        }
-
 
         Comment comment = comment1;
         comment.setAuthor(user);
@@ -159,8 +151,9 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
 
 
     public ItemDtoRes removeById1(Long itemId) {
+        Item item = itemRepository.findById(itemId).get();
         itemRepository.deleteById(itemId);
-        return itemMapper.toItemDtoRes(itemRepository.findById(itemId).get());
+        return itemMapper.toItemDtoRes(item);
 
     }
 

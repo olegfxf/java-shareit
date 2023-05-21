@@ -54,16 +54,6 @@ public class UserServiceTest {
     @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
     @Test
     void updateCustomer() {
-//        User user = new User();
-//        user.setId(1L);
-//        user.setName("name");
-//        user.setEmail("name@mail.ru");
-//        userService.save1(user);
-
-//        UserDtoReq userDtoReq = new UserDtoReq();
-//        userDtoReq.setName("name1");
-//        userDtoReq.setEmail("name1@mail.ru");
-
         UserDtoRes actualUserDtoRes = userService.updateCustomer(1L, userDtoReq);
 
         assertEquals("name1", actualUserDtoRes.getName());

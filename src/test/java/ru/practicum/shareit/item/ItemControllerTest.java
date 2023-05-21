@@ -135,48 +135,6 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.available", is(itemDtoRes.getAvailable())));
     }
 
-    @SneakyThrows
-    @Test
-    void update() {
-        Long userId = 1L;
-        User user = new User();
-        Long itemId = 1L;
-        Item oldItem = Item.builder()
-                .id(1L)
-                .name("Дрель")
-                .description("Малогабаритная дрель")
-                .available(true)
-                .owner(user)
-                .requestId(5L)
-                .build();
-
-        when(itemService.updateItem(anyLong(), any(), anyLong()))
-                .thenReturn(itemDtoRes);
-
-        mvc.perform(patch("/items/{userId}", userId)
-                        .content(mapper.writeValueAsString(itemDtoRes))
-                        .header("x-sharer-user-id", 1L)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(itemDtoRes.getId()), Long.class))
-                .andExpect(jsonPath("$.name", is(itemDtoRes.getName())))
-                .andExpect(jsonPath("$.description", is(itemDtoRes.getDescription())))
-                .andExpect(jsonPath("$.available", is(itemDtoRes.getAvailable())));
-
-        when(itemRepository.findById(itemId)).thenReturn(Optional.of(oldItem));
-
-        Item item1 = itemRepository.findById(itemId).get();
-
-        verify(itemRepository, Mockito.times(1))
-                .findById(itemArgumentCaptor.capture());
-        Long savedItem = itemArgumentCaptor.getValue();
-
-        System.out.println(savedItem + "  savedItem");
-
-
-    }
 
     @SneakyThrows
     @Test

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.messages.LogMessages;
 
 import javax.validation.Valid;
@@ -46,11 +45,6 @@ public class ItemController {
         return itemService.getById(itemId, userId);
     }
 
-    @PutMapping
-    public ItemDtoRes update(@Valid @RequestBody Item item) {
-        log.debug(String.valueOf(LogMessages.TRY_UPDATE), item);
-        return itemMapper.toItemDtoRes(itemService.update(item));
-    }
 
     @DeleteMapping("/{itemId}")
     public ItemDtoRes removeById(@PathVariable Long itemId) {
