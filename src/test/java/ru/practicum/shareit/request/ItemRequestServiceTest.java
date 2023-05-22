@@ -43,7 +43,7 @@ class ItemRequestServiceTest {
     @BeforeEach
     void setUp() {
         itemRequest = ItemRequest.builder()
-                .id(1L)
+                //    .id(1L)
                 .description("description")
                 .requester(new User())
                 .created(LocalDateTime.of(2023, 2, 1, 0, 0))

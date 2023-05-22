@@ -10,7 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.request.dto.ItemForRequest;
+import ru.practicum.shareit.request.dto.ItemForRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoForUser;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
@@ -53,15 +53,15 @@ class ItemRequestControllerTest {
 
     @BeforeEach
     void setUp() {
-        ItemForRequest itemForRequest = new ItemForRequest();
-        itemForRequest.setId(1L);
-        itemForRequest.setName("name");
-        itemForRequest.setDescription("на дрель");
-        itemForRequest.setAvailable(true);
-        itemForRequest.setRequestId(1L);
+        ItemForRequestDto itemForRequestDto = new ItemForRequestDto();
+        itemForRequestDto.setId(1L);
+        itemForRequestDto.setName("name");
+        itemForRequestDto.setDescription("на дрель");
+        itemForRequestDto.setAvailable(true);
+        itemForRequestDto.setRequestId(1L);
 
-        List<ItemForRequest> itemsForRequest = new ArrayList<>();
-        itemsForRequest.add(itemForRequest);
+        List<ItemForRequestDto> itemsForRequest = new ArrayList<>();
+        itemsForRequest.add(itemForRequestDto);
 
         itemRequestDtoForUser = ItemRequestDtoForUser.builder()
                 .id(1L)

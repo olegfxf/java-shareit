@@ -52,7 +52,6 @@ public class BookingController {
 
     @GetMapping
     @ResponseBody
-    @Validated
     public List<BookingDtoRes> getAll(@Valid @RequestHeader("x-sharer-user-id") Long userId,
                                       @RequestParam(value = "from", defaultValue = "0", required = false) @Positive @Min(0) Integer from,
                                       @RequestParam(value = "size", defaultValue = "20", required = false) @Positive @Min(2) Integer size,

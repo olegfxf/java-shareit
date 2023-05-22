@@ -19,5 +19,5 @@ public class ItemRequestDtoForUser {
 
     LocalDateTime created;
 
-    List<ItemForRequest> items;
+    List<ItemForRequestDto> items;
 }

@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
-    ItemRequestService itemRequestService;
+    private final ItemRequestService itemRequestService;
 
     @Autowired
     public ItemRequestController(ItemRequestService itemRequestService) {

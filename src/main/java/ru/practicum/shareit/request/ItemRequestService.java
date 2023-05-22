@@ -1,5 +1,7 @@
 package ru.practicum.shareit.request;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -23,9 +25,8 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ItemRequestService {
-    int page = 0;
-    int size = 20;
     ItemRequestRepository itemRequestRepository;
     UserRepository userRepository;
     ItemRepository itemRepository;
@@ -55,7 +56,7 @@ public class ItemRequestService {
     public List<ItemRequestDtoForUser> getAllForOwner(Long userId) {
         User requester = getRequester(userId);
         List<ItemRequestDtoForUser> itemRequestDtoPageForUsers = itemRequestRepository.findAllByRequester(requester,
-                        PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "created")))
+                        PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "created")))
                 .stream().map(e -> ItemRequestMapper.toItemRequestDtoForUser(e,
                         itemRepository.findAllByRequestId(e.getId()))).collect(Collectors.toList());
 
