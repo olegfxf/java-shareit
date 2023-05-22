@@ -93,43 +93,58 @@ public class BookingServiceTest {
     void save() {
         BookingDtoRes actual = bookingService.save(user2Id, booking);
         assertEquals(item, actual.getItem());
+    }
 
+
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+    @Test
+    void saveExceptionAvailable() {
         item.setAvailable(false);
         itemRepository.save(item);
-        actual = bookingService.approveIt(1L, userId, true);
         assertThrows(ValidationException.class, () -> bookingService
                 .save(user2Id, booking));
+    }
 
-        item.setAvailable(true);
-        itemRepository.save(item);
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+    @Test
+    void saveExceptionBookerIdEqualsOwnerId() {
         assertThrows(NotFoundException.class, () -> bookingService
                 .save(userId, booking));
+    }
 
+
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+    @Test
+    void saveExceptionStartIsNull() {
         booking.setStart(null);
         assertThrows(ValidationException.class, () -> bookingService
                 .save(user2Id, booking));
+    }
 
-        booking.setStart(LocalDateTime.now());
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+    @Test
+    void saveExceptionStartAfterEnd() {
+        booking.setStart(LocalDateTime.now().plusDays(1));
         booking.setEnd(LocalDateTime.now().minusDays(1));
         assertThrows(ValidationException.class, () -> bookingService
                 .save(user2Id, booking));
+    }
 
-
-//        booking = Booking.builder()
-//                .start(LocalDateTime.of(2023, 2, 1, 1, 1))
-//                .end(LocalDateTime.of(2023, 2, 1, 1, 1))
-//                .status(Status.APPROVED)
-//                .booker(user)
-//                .item(item)
-//                .id(1L)
-//                .build();
-        booking.setStart(LocalDateTime.now());
-        booking.setEnd(LocalDateTime.now());
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+    @Test
+    void saveExceptionStartEqualEnd() {
+        LocalDateTime myNow = LocalDateTime.now().plusDays(1);
+        booking.setStart(myNow);
+        booking.setEnd(myNow);
         assertThrows(ValidationException.class, () -> bookingService
                 .save(user2Id, booking));
+    }
 
+
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+    @Test
+    void saveExceptionStartBeforeNow() {
         booking.setStart(LocalDateTime.now().minusDays(1));
-        booking.setEnd(LocalDateTime.now().plusDays(1));
         assertThrows(ValidationException.class, () -> bookingService
                 .save(user2Id, booking));
     }

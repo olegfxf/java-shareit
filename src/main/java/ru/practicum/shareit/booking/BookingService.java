@@ -70,10 +70,11 @@ public class BookingService {
         if (booking.getStart() == null || booking.getEnd() == null)
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
 
-        if (!booking.getEnd().isAfter(booking.getStart()))
+        if (booking.getStart().equals(booking.getEnd())) {
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
+        }
 
-        if (booking.getStart().equals(booking.getEnd()))
+        if (!booking.getEnd().isAfter(booking.getStart()))
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
 
         if (booking.getStart().isBefore(LocalDateTime.now()))
