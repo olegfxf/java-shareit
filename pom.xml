@@ -203,6 +203,10 @@
                             <exclude>ru/practicum/**/messages/*</exclude>
                             <exclude>ru/practicum/**/exceptions/*</exclude>
                             <exclude>ru/practicum/**/item/model/*</exclude>
+
+                            <exclude>ru/practicum/**/user/model/*</exclude>
+                            <exclude>ru/practicum/**/item/dto/*</exclude>
+                            <exclude>ru/practicum/**/booking/dto/*</exclude>
                         </excludes>
                     </configuration>
                     <executions>
