@@ -201,6 +201,9 @@
                             <exclude>ru/practicum/**/abstracts/*</exclude>
                             <exclude>ru/practicum/**/request/model/*</exclude>
                             <exclude>ru/practicum/**/booking/model/*</exclude>
+                            <exclude>ru/practicum/**/messages/*</exclude>
+                            <exclude>ru/practicum/**/exceptions/*</exclude>
+                            <exclude>ru/practicum/**/item.model/*</exclude>
 <!--                            <exclude>com/baeldung/**/*DTO.*</exclude>-->
 <!--                            <exclude>**/config/*</exclude>-->
                         </excludes>
