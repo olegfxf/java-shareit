@@ -105,7 +105,6 @@ class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(itemRequestDto.getId()), Long.class))
                 .andExpect(jsonPath("$.description", is(itemRequestDto.getDescription())))
-                //       .andExpect(jsonPath("$.requester", is(itemRequestDto.getRequester())))
                 .andExpect(jsonPath("$.created",
                         is(itemRequestDto.getCreated().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
         ;

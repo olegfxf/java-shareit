@@ -37,7 +37,6 @@ public class UserController {
     @GetMapping
     public List<UserDtoRes> getAll() {
         log.debug(String.valueOf(LogMessages.TRY_GET_ALL), "пользователей");
-        //return userService.getAll().stream().map(e -> new UserDtoRes(e)).collect(Collectors.toList());
         return userService.getAll1();
     }
 

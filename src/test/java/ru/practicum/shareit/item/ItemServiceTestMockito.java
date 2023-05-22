@@ -66,42 +66,6 @@ class ItemServiceTestMockito {
 
     @Test
     void addComment() {
-//        long itemId = 0L;
-//        long userId = 0L;
-//        Comment expectedComment = new Comment();
-//        Item expectedItem = new Item();
-//        Item item = new Item();
-//        mockItem = new Item();
-//        User user = new User();
-//        user.setId(1L);
-//        user.setName("name");
-//        user.setEmail("name@mail.ru");
-//        item.setOwner(user);
-//        mockItem.setOwner(user);
-//        Booking booking = new Booking();
-//        List<Booking> bookings = new ArrayList<>();
-//        bookings.add(booking);
-//        when(commentRepository.save(expectedComment))
-//                .thenReturn(expectedComment);
-//
-//        when(itemRepository.findById(itemId))
-//                .thenReturn(Optional.of(expectedItem));
-//
-//        when(userRepository.findById(userId))
-//                .thenReturn(Optional.of(user));
-//
-//        when(bookingRepository.existsBookingByBookerAndItemAndStatus(user, item, APPROVED))
-//                .thenReturn(true);
-//
-//        doReturn(bookings).
-//                when(bookingRepository).findByBookerAndItemAndEndBefore(user, item, LocalDateTime.now());
-//
-////        when(mockItem.getOwner().getId().equals(userId))
-////                .thenReturn(false);
-//
-//        Comment actualComment = itemService.addComment(expectedComment, itemId, userId);
-//
-//        assertEquals(expectedComment, actualComment);
     }
 
     @Test

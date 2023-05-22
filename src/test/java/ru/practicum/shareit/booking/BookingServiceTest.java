@@ -184,19 +184,13 @@ public class BookingServiceTest {
     @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
     @Test
     void getAll() {
-//        int from = 4;
-//        int size = 2;
-        //      String state = "ALL";
         List<BookingDtoRes> expectedBookings = new ArrayList<>();
         expectedBookings.add(BookingMapper.toBookingDtoRes(booking));
-//        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
-//        Pageable p = PageRequest.of(0, 2);
 
         assertThrows(UnexpectedErrorException.class, () -> bookingService
                 .getAll(user2Id, null, -1, 2));
 
         bookingService.save(user2Id, booking); // all
-//        System.out.println(bookingRepository.findAllByBookerOrderByIdDesc(user2, p) + " @@@");
         List<BookingDtoRes> actual = bookingService.getAll(user2Id, State.ALL.toString(), -1, 2);
         assertEquals(user2, actual.get(0).getBooker());
 
@@ -243,7 +237,6 @@ public class BookingServiceTest {
                 .ownerGet(5L, State.ALL.toString(), 0, 2));
 
         bookingService.save(user2Id, booking); // all
-//        System.out.println(bookingRepository.findAllByBookerOrderByIdDesc(user2, p) + " @@@");
         List<BookingDtoRes> actual = bookingService.ownerGet(userId, State.ALL.toString(), 0, 2);
         assertEquals(user2, actual.get(0).getBooker());
 

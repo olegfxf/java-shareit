@@ -29,12 +29,10 @@ public class Booking extends AbstractModel {
     private Long id;
 
     @JsonFormat
-    //@FutureOrPresent
     @Column(name = "start_date")
     LocalDateTime start;
 
     @JsonFormat
-    //@Future
     @Column(name = "end_date")
     LocalDateTime end;
 

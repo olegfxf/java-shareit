@@ -29,7 +29,6 @@ public class ItemMapper {
                 .name(itemDtoRes.getName())
                 .description(itemDtoRes.getDescription())
                 .available(itemDtoRes.getAvailable())
-                //.owner(owner)
                 .requestId(itemDtoRes.getRequestId())
                 .build();
     }
@@ -68,7 +67,6 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .requestId(item.getRequestId())
-                //   .ownerId(item.getOwner().getId())
                 .build();
     }
 

@@ -127,18 +127,6 @@ class ItemRequestServiceTest {
         assertEquals(expectedItemRequestDtoForUser, actualItemRequestDtoForUser);
     }
 
-//    @Test
-//    void getItemRequest(){
-//        Long itemRequestId = 1L;
-//        ItemRequest itemRequest = new ItemRequest();
-//        when(itemRequestRepository.findById(itemRequestId))
-//                .thenReturn(Optional.empty());
-//
-//        itemRequestService.getItemRequest(itemRequestId);
-//
-//        assertThrows(Exception.class,
-//                () -> itemRequestService.getItemRequest(itemRequestId));
-//    }
 
     @Test
     void getById() {
