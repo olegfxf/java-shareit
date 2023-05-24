@@ -1,23 +1,16 @@
 package ru.practicum.shareit.item;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import com.sun.jdi.InternalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.abstracts.AbstractServiceImpl;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.LastNextRecordBooking;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
-import ru.practicum.shareit.item.dto.ItemDtoReq;
-import ru.practicum.shareit.item.dto.ItemDtoRes;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.messages.ExceptionMessages;
@@ -61,47 +54,44 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
         this.userRepository = userRepository;
     }
 
-    public ItemDtoRes addItem(ItemDtoReq itemDtoReq, String ownerId) {
+    public ItemDtoRes addItem(ItemDtoReq itemDtoReq, Long ownerId) {
 
-        if (!userService.getAll().stream().anyMatch(e -> Long.valueOf(ownerId).equals(e.getId()))) {
+        if (!userService.getAll().stream().anyMatch(e -> ownerId.equals(e.getId()))) {
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
         }
+
         if (itemRepository.findAll().stream().anyMatch(e -> itemDtoReq.getName().equals(e.getName())))
             throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
 
-        Item item = itemMapper.toItem(itemDtoReq, Long.valueOf(ownerId));
-        User owner = userService.getById(Long.valueOf(ownerId));
+        Item item = itemMapper.toItem(itemDtoReq, ownerId);
+        User owner = userService.getById(ownerId);
         item.setOwner(owner);
 
         return itemMapper.toItemDtoRes(save(item));
     }
 
     @Transactional
-    public ItemDtoRes updateItem(Long id, JsonMergePatch patch, String ownerId) {
-        Item item = this.getById(id);
+    public ItemDtoRes updateItem(Long itemId, ItemDtoReq itemDtoReq, Long ownerId) {
+        Item item;
+        try {
+            item = this.getById(itemId);
+        } catch (NotFoundException e) {
+            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
+        }
 
-        if (!Long.valueOf(ownerId).equals(item.getOwner().getId())) {
+        if (!ownerId.equals(item.getOwner().getId())) {
             log.debug(String.valueOf(HandlerMessages.SERVER_ERROR));
             throw new NotFoundException(ExceptionMessages.NOT_FOUND_ID);
         }
 
-        try {
-            Item itemPatched = applyPatchToItem(patch, item);
-            User owner = userService.getById(Long.valueOf(ownerId));
-            itemPatched.setOwner(owner);
-            log.debug(String.valueOf(LogMessages.TRY_PATCH), itemPatched);
-            return itemMapper.toItemDtoRes(itemRepository.save(itemPatched));
-        } catch (JsonPatchException | JsonProcessingException e) {
-            throw new InternalException(String.valueOf(HandlerMessages.SERVER_ERROR));
-        } catch (NotFoundException e) {
-            throw new NotFoundException(String.valueOf(HandlerMessages.NOT_FOUND));
-        }
-    }
+        Item item1 = ItemMapper.toItem(itemDtoReq, ownerId);
 
-    public Item applyPatchToItem(JsonMergePatch patch, Item targetCustomer)
-            throws JsonPatchException, JsonProcessingException {
-        JsonNode patched = patch.apply(new ObjectMapper().convertValue(targetCustomer, JsonNode.class));
-        return new ObjectMapper().treeToValue(patched, Item.class);
+        if (item1.getName() != null) item.setName(item1.getName());
+        if (item1.getDescription() != null) item.setDescription(item1.getDescription());
+        if (item1.getAvailable() != null) item.setAvailable(item1.getAvailable());
+
+        log.debug(String.valueOf(LogMessages.TRY_PATCH), item);
+        return itemMapper.toItemDtoRes(itemRepository.save(item));
     }
 
     public List<ItemDtoRes> getAllByUserId(Long userId) {
@@ -114,6 +104,7 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
 
     public List<ItemDtoRes> searchText(String text) {
         List<Item> items = itemRepository.search(text);
+
         log.debug(String.valueOf(LogMessages.TRY_GET_SEARCH));
         return items.stream().map(e -> itemMapper.toItemDtoRes(e)).collect(toList());
     }
@@ -131,33 +122,39 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
             itemDtoRes.setLastBooking(lastNextRecordBooking.get(itemId, false, Long.valueOf(userId)));
         }
 
-
         log.debug(String.valueOf(LogMessages.GET), itemDtoRes);
         return itemDtoRes;
     }
 
-    @Transactional
-    public Comment addComment(Comment comment1, Long itemId, Long userId) {
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public CommentDtoRes addComment(Comment comment1, Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId).get();
         User user = userRepository.findById(userId).get();
 
-        if (!bookingRepository.existsBookingByBookerAndItemAndStatus(user, item, APPROVED))
+        if (!bookingRepository.existsBookingByBookerAndItemAndStatus(user, item, APPROVED)) {
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
+        }
 
         if (bookingRepository.findByBookerAndItemAndEndBefore(user, item, LocalDateTime.now()).isEmpty())
             throw new ValidationException(String.valueOf((HandlerMessages.VALID)));
 
-        if (item.getOwner().getId().equals(userId)) {
+        if (item.getOwner().getId().equals(userId))
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
-        }
 
         Comment comment = comment1;
         comment.setAuthor(user);
         comment.setItem(item);
         comment.setCreated(LocalDateTime.now());
-        commentRepository.save(comment);
 
-        return commentRepository.save(comment);
+        return CommentMapper.toCommentDtoRes(commentRepository.save(comment));
+    }
+
+
+    public ItemDtoRes removeById1(Long itemId) {
+        Item item = itemRepository.findById(itemId).get();
+        itemRepository.deleteById(itemId);
+        return itemMapper.toItemDtoRes(item);
+
     }
 
 

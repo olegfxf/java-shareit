@@ -30,6 +30,14 @@ public class ErrorsHandler {
         return Map.of(String.valueOf(HandlerMessages.NOT_FOUND), e.getMessage());
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public Map<String, String> handlerNotFoundException1(final UserNotFoundException ex) {
+        log.info(String.valueOf(HandlerMessages.ERROR_404), ex.getMessage());
+        return Map.of(String.valueOf(HandlerMessages.NOT_FOUND), ex.getMessage());
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handlerConflictException(final ConflictException e) {

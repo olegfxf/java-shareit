@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -28,13 +29,14 @@ public interface BookingRepository extends CommonRepository<Booking> {
     /**
      * находим все записи для пользователя, где он хозяина вещи или ее забронировал
      */
-    List<Booking> findAllByBookerOrderByIdDesc(User booker);
+    List<Booking> findAllByBookerOrderByIdDesc(User booker, Pageable pageable);
+
 
     @Query(value = " SELECT * FROM Bookings AS b " +
             " INNER JOIN Items AS i on b.item_id = i.id " +
             " WHERE i.owner_id = :ownerId " +
             " ORDER BY b.start_date DESC ", nativeQuery = true)
-    List<Booking> findAll(@Param("ownerId") Long ownerId);
+    List<Booking> findAll(@Param("ownerId") Long ownerId, Pageable pageable);
 
 
     /**

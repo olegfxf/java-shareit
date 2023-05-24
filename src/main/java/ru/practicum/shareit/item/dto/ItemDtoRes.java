@@ -14,7 +14,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class ItemDtoRes {
-    long id;
+    Long id;
 
     String name;
 
@@ -24,7 +24,7 @@ public class ItemDtoRes {
 
     Long ownerId;
 
-    Long request;
+    Long requestId;
 
     Optional<LastNextRecordBooking> lastBooking;
 

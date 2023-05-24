@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class BookingDtoReq {
     @Positive
     long id;

@@ -8,8 +8,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDateTime;
 
 /**
@@ -26,13 +24,15 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "bookings")
 public class Booking extends AbstractModel {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @JsonFormat
-    @FutureOrPresent
     @Column(name = "start_date")
     LocalDateTime start;
 
     @JsonFormat
-    @Future
     @Column(name = "end_date")
     LocalDateTime end;
 
@@ -47,4 +47,5 @@ public class Booking extends AbstractModel {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     Status status;
+
 }

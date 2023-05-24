@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoRes;
@@ -68,10 +70,11 @@ public class BookingService {
         if (booking.getStart() == null || booking.getEnd() == null)
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
 
-        if (!booking.getEnd().isAfter(booking.getStart()))
+        if (booking.getStart().equals(booking.getEnd())) {
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
+        }
 
-        if (booking.getStart().equals(booking.getEnd()))
+        if (!booking.getEnd().isAfter(booking.getStart()))
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
 
         if (booking.getStart().isBefore(LocalDateTime.now()))
@@ -106,14 +109,15 @@ public class BookingService {
     }
 
     @Transactional
-    public List<BookingDtoRes> getAll(Long userId, String state) {
+    public List<BookingDtoRes> getAll(Long userId, String state, Integer from, Integer size) {
+        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
         Optional<State> checkState = Stream.of(State.values()).filter(e -> String.valueOf(e).equals(state)).findFirst();
         if (checkState.isEmpty())
             throw new UnexpectedErrorException(String.valueOf(HandlerMessages.UNEXPECTED_ERROR));
 
         switch (State.valueOf(state)) {
             case ALL:
-                return bookingRepository.findAllByBookerOrderByIdDesc(userService.getById(userId))
+                return bookingRepository.findAllByBookerOrderByIdDesc(userService.getById(userId), pageable)
                         .stream().map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
             case CURRENT:
                 return bookingRepository.currentTimeBooker(userId, LocalDateTime.now())
@@ -136,7 +140,8 @@ public class BookingService {
 
 
     @Transactional
-    public List<BookingDtoRes> ownerGet(Long userId, String state) throws IllegalArgumentException {
+    public List<BookingDtoRes> ownerGet(Long userId, String state, Integer from, Integer size) throws IllegalArgumentException {
+        PageRequest pageRequest = PageRequest.of(from, size);
         Optional<State> checkState = Stream.of(State.values()).filter(e -> String.valueOf(e).equals(state)).findFirst();
         if (checkState.isEmpty())
             throw new UnexpectedErrorException(String.valueOf(HandlerMessages.UNEXPECTED_ERROR));
@@ -145,7 +150,7 @@ public class BookingService {
             case ALL:
                 if (!userRepository.existsById(userId))
                     throw new InternalException(String.valueOf(HandlerMessages.SERVER_ERROR));
-                return bookingRepository.findAll(userId).stream()
+                return bookingRepository.findAll(userId, pageRequest).stream()
                         .map(e -> BookingMapper.toBookingDtoRes(e)).collect(Collectors.toList());
             case CURRENT:
                 return bookingRepository.currentTimeOwner(userId, LocalDateTime.now()).stream()
