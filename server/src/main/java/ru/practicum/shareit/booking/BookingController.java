@@ -14,9 +14,6 @@ import ru.practicum.shareit.messages.HandlerMessages;
 import ru.practicum.shareit.messages.LogMessages;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Positive;
 import java.util.List;
 
 @Slf4j
@@ -30,15 +27,15 @@ public class BookingController {
     @PostMapping
     @ResponseBody
     public BookingDtoRes save(@RequestBody BookingDtoReq bookingDtoReq,
-                              @RequestHeader("x-sharer-user-id") @NotEmpty Long bookerId) {
+                              @RequestHeader("x-sharer-user-id") Long bookerId) {
         return bookingService.save(bookerId, BookingMapper.toBooking(bookingDtoReq));
     }
 
     @PatchMapping("/{bookingId}")
     @ResponseBody
-    public BookingDtoRes approveIt(@PathVariable Long bookingId,
-                                   @RequestHeader("x-sharer-user-id") Long userId,
-                                   @RequestParam boolean approved) {
+    public BookingDtoRes approveRequest(@PathVariable Long bookingId,
+                                        @RequestHeader("x-sharer-user-id") Long userId,
+                                        @RequestParam boolean approved) {
         return bookingService.approveIt(bookingId, userId, approved);
     }
 
@@ -53,9 +50,9 @@ public class BookingController {
     @GetMapping
     @ResponseBody
     public List<BookingDtoRes> getAll(@Valid @RequestHeader("x-sharer-user-id") Long userId,
-                                      @RequestParam(value = "from", defaultValue = "0", required = false) @Positive @Min(0) Integer from,
-                                      @RequestParam(value = "size", defaultValue = "20", required = false) @Positive @Min(2) Integer size,
-                                      @RequestParam(value = "state", defaultValue = "ALL", required = false) String state) {
+                                      @RequestParam Integer from,
+                                      @RequestParam Integer size,
+                                      @RequestParam String state) {
         log.debug(String.valueOf(LogMessages.TRY_GET_ALL), "бронирований");
 
         if (size < 0 || from < 0)
@@ -68,9 +65,9 @@ public class BookingController {
     @ResponseBody
     @Validated
     public List<BookingDtoRes> ownerGet(@Valid @RequestHeader("x-sharer-user-id") Long userId,
-                                        @RequestParam(value = "from", defaultValue = "0", required = false) @Positive @Min(0) Integer from,
-                                        @RequestParam(value = "size", defaultValue = "20", required = false) @Positive @Min(2) Integer size,
-                                        @RequestParam(value = "state", defaultValue = "ALL", required = false) String state) {
+                                        @RequestParam Integer from,
+                                        @RequestParam Integer size,
+                                        @RequestParam String state) {
         return bookingService.ownerGet(userId, state, from, size);
     }
 }

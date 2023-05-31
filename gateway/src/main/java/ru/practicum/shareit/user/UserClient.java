@@ -32,7 +32,7 @@ public class UserClient extends BaseClient {
     public ResponseEntity<Object> updateUser(UserDto userDto, Long userId) {
         ResponseEntity<Object> obj = patch("/" + userId, userDto);
         System.out.println(obj + " obj");
-        return obj; //patch("/" + userId, userDto);
+        return obj;
     }
 
     public ResponseEntity<Object> getUsers() {

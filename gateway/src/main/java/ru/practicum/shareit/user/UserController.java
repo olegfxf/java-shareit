@@ -23,7 +23,7 @@ public class UserController {
         return userClient.createUser(userDto);
     }
 
-    @PatchMapping("/{userId}") //обновление пользователя
+    @PatchMapping("/{userId}")
     public ResponseEntity<Object> updateUser(@Validated() @RequestBody UserDto userDto,
                                              @Min(value = 1) @PathVariable Long userId) {
         log.info("Patch User {}, userId {}", userDto, userId);
@@ -36,13 +36,13 @@ public class UserController {
         return userClient.getUsers();
     }
 
-    @GetMapping("/{userId}") //получение пользователя по id
+    @GetMapping("/{userId}")
     public ResponseEntity<Object> getUsersById(@NotNull @Min(value = 1) @PathVariable Long userId) {
         log.info("Get UserById {}", userId);
         return userClient.getUserById(userId);
     }
 
-    @DeleteMapping("/{userId}") //удаление пользователя
+    @DeleteMapping("/{userId}")
     public ResponseEntity<Object> deleteUser(@NotNull @Min(value = 1) @PathVariable Long userId) {
         log.info("Delete User {}", userId);
         return userClient.deleteUserById(userId);

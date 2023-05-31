@@ -7,5 +7,6 @@ import ru.practicum.shareit.user.model.User;
 @Repository
 public interface UserRepository extends CommonRepository<User> {
     boolean existsById(Long id);
+
     boolean existsUserByEmail(String email);
 }

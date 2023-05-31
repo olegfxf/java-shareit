@@ -49,7 +49,7 @@ public class BookingService {
         User booker = userService.getById(bookerId);
         Item item = itemService.getById(booking.getItem().getId());
 
-        if (!item.getAvailable()) // проверка доступности вещи
+        if (!item.getAvailable())
             throw new ValidationException(String.valueOf(HandlerMessages.VALID));
 
         dateValidation(booking, item);

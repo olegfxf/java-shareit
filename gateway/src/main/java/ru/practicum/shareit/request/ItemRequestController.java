@@ -39,7 +39,7 @@ public class ItemRequestController {
     public ResponseEntity<Object> getItemRequestsById(
             @NotNull @Min(value = 1) @RequestHeader("X-Sharer-User-Id") Long userId,
             @NotNull @Min(value = 1) @PathVariable Long itemRequestId) {
-        log.info("GET данные о запросе с ID {}, пользователем с ID {}",itemRequestId, userId);
+        log.info("GET данные о запросе с ID {}, пользователем с ID {}", itemRequestId, userId);
         return requestClient.getItemRequestById(itemRequestId, userId);
     }
 

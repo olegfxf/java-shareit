@@ -108,7 +108,7 @@ public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
     public class ItemDtoComparator implements Comparator<ItemDtoRes> {
         @Override
         public int compare(ItemDtoRes item1, ItemDtoRes item2) {
-            return ((Long)(item1.getId() - item2.getId())).intValue();
+            return ((Long) (item1.getId() - item2.getId())).intValue();
         }
     }
 

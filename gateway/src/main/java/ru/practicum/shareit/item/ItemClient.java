@@ -38,7 +38,7 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getItems(Long ownerId) {
-        return get("",ownerId);
+        return get("", ownerId);
     }
 
     public ResponseEntity<Object> getItemsBySearch(String text) {
