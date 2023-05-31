@@ -24,7 +24,7 @@
 
 	<modules>
 		<module>gateway</module>
-		<module>server1</module>
+		<module>server</module>
 	</modules>
 
 	<build>

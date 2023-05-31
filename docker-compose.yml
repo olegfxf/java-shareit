@@ -13,7 +13,7 @@ services:
       - TZ=Europe/Moscow
 
   server:
-    build: ./server1
+    build: server
     image: server-image
     container_name: server-container
     ports:
