@@ -1,4 +1,4 @@
-version: '3.3'  #3.8
+version: '3.8'  #3.8
 services:
   gateway:
     build: ./gateway
@@ -10,7 +10,7 @@ services:
       - server
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
-      - TZ=Europe/Moscow
+#      - TZ=Europe/Moscow
 
   server:
     build: server
@@ -22,7 +22,7 @@ services:
       - db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
-      - TZ=Europe/Moscow
+#      - TZ=Europe/Moscow
 
 
   db:
