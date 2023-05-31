@@ -1,3 +1,3 @@
 FROM amazoncorretto:11
-COPY target/*.jar gateway.jar
+COPY target/shareit-gateway-0.0.1-SNAPSHOT.jar gateway.jar
 ENTRYPOINT ["java","-jar","/gateway.jar"]
