@@ -24,19 +24,19 @@ public class RequestClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> createItemRequest(RequestDto itemRequestDto, Long userId) {
+    public ResponseEntity<Object> addItemRequest(RequestDto itemRequestDto, Long userId) {
         return post("", userId, itemRequestDto);
     }
 
-    public ResponseEntity<Object> getItemRequestsByRequestorId(long userId) {
+    public ResponseEntity<Object> getAllForOwner(long userId) {
         return get("", userId);
     }
 
-    public ResponseEntity<Object> getItemRequestById(long itemRequestId, long userId) {
+    public ResponseEntity<Object> getById(long itemRequestId, long userId) {
         return get("/" + itemRequestId, userId);
     }
 
-    public ResponseEntity<Object> getAllItemRequests(long userId, Integer from, Integer size) {
+    public ResponseEntity<Object> getAllForUser(long userId, Integer from, Integer size) {
         String path = "/all" + "?from=" + from;
         if (size != null) {
             path += "&size=" + size;

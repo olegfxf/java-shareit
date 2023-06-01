@@ -25,25 +25,25 @@ public class UserClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> createUser(UserDto userDto) {
+    public ResponseEntity<Object> save(UserDto userDto) {
         return post("", userDto);
     }
 
-    public ResponseEntity<Object> updateUser(UserDto userDto, Long userId) {
+    public ResponseEntity<Object> updateCustomer(UserDto userDto, Long userId) {
         ResponseEntity<Object> obj = patch("/" + userId, userDto);
         System.out.println(obj + " obj");
         return obj;
     }
 
-    public ResponseEntity<Object> getUsers() {
+    public ResponseEntity<Object> getAll() {
         return get("");
     }
 
-    public ResponseEntity<Object> getUserById(Long userId) {
+    public ResponseEntity<Object> getById(Long userId) {
         return get("/" + userId);
     }
 
-    public ResponseEntity<Object> deleteUserById(Long userId) {
+    public ResponseEntity<Object> removeById(Long userId) {
         return delete("/" + userId);
     }
 

@@ -33,19 +33,19 @@ public class ItemClient extends BaseClient {
         return patch("/" + itemId, userId, itemDto);
     }
 
-    public ResponseEntity<Object> getItemById(Long itemId, Long userId) {
+    public ResponseEntity<Object> getById(Long itemId, Long userId) {
         return get("/" + itemId, userId);
     }
 
-    public ResponseEntity<Object> getItems(Long ownerId) {
+    public ResponseEntity<Object> getAll(Long ownerId) {
         return get("", ownerId);
     }
 
-    public ResponseEntity<Object> getItemsBySearch(String text) {
+    public ResponseEntity<Object> search(String text) {
         return get("/search?text=" + text);
     }
 
-    public ResponseEntity<Object> createComment(CommentDto commentDto, Long itemId, Long userId) {
+    public ResponseEntity<Object> addComment(CommentDto commentDto, Long itemId, Long userId) {
         return post("/" + itemId + "/comment", userId, commentDto);
     }
 

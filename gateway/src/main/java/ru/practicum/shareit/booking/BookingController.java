@@ -30,7 +30,7 @@ public class BookingController {
     public ResponseEntity<Object> approveRequest(@PathVariable Long bookingId,
                                                  @RequestHeader("X-Sharer-User-Id") Long userId,
                                                  @RequestParam Boolean approved) {
-        return bookingClient.approveBooking(userId, bookingId, approved);
+        return bookingClient.approveRequest(userId, bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")

@@ -26,34 +26,30 @@ public class ItemController {
         return itemClient.createItem(itemDto, userId);
     }
 
-    @PatchMapping("/{itemId}") //обновление предмета
+    @PatchMapping("/{itemId}")
     public ResponseEntity<Object> updateItem(
             @Validated @RequestBody ItemDto itemDto,
             @NotNull @Min(value = 1) @PathVariable Long itemId,
             @NotNull @Min(value = 1) @RequestHeader("X-Sharer-User-Id") Long ownerId) {
-//        log.info("Patch Item {},itemId {}, userId {}", itemDto, itemId, ownerId);
         return itemClient.updateItem(itemDto, itemId, ownerId);
     }
 
-    @GetMapping("/{itemId}") //получение предмета по id
-    public ResponseEntity<Object> getItemById(
+    @GetMapping("/{itemId}")
+    public ResponseEntity<Object> getById(
             @NotNull @Min(value = 1) @PathVariable Long itemId,
             @NotNull @Min(value = 1) @RequestHeader("X-Sharer-User-Id") Long userId) {
-        //       log.info("Get itemId {}", itemId);
-        return itemClient.getItemById(itemId, userId);
+        return itemClient.getById(itemId, userId);
     }
 
-    @GetMapping() //список предметов
-    public ResponseEntity<Object> getItems(
+    @GetMapping()
+    public ResponseEntity<Object> getAll(
             @NotNull @Min(value = 1) @RequestHeader("X-Sharer-User-Id") Long ownerId) {
-        //       log.info("Get список предметов");
-        return itemClient.getItems(ownerId);
+        return itemClient.getAll(ownerId);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> getItemsBySearchQuery(@RequestParam String text) {
-//        log.info("GET текстом {}", text);
-        return itemClient.getItemsBySearch(text);
+    public ResponseEntity<Object> search(@RequestParam String text) {
+        return itemClient.search(text);
     }
 
     @PostMapping("/{itemId}/comment")
@@ -61,6 +57,6 @@ public class ItemController {
             @RequestBody @Validated CommentDto commentDto,
             @NotNull @Min(value = 1) @PathVariable Long itemId,
             @NotNull @Min(value = 1) @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemClient.createComment(commentDto, itemId, userId);
+        return itemClient.addComment(commentDto, itemId, userId);
     }
 }

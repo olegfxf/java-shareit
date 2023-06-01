@@ -17,27 +17,27 @@ public class UserController {
 
     @PostMapping()
     public ResponseEntity<Object> save(@Validated() @RequestBody UserDto userDto) {
-        return userClient.createUser(userDto);
+        return userClient.save(userDto);
     }
 
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> updateCustomer(@PathVariable Long userId,
                                                  @RequestBody UserDto userDto) {
-        return userClient.updateUser(userDto, userId);
+        return userClient.updateCustomer(userDto, userId);
     }
 
     @GetMapping()
     public ResponseEntity<Object> getAll() {
-        return userClient.getUsers();
+        return userClient.getAll();
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<Object> getById(@NotNull @Min(value = 1) @PathVariable Long userId) {
-        return userClient.getUserById(userId);
+        return userClient.getById(userId);
     }
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Object> removeById(@NotNull @Min(value = 1) @PathVariable Long userId) {
-        return userClient.deleteUserById(userId);
+        return userClient.removeById(userId);
     }
 }
