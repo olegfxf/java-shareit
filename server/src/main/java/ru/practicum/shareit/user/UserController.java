@@ -28,10 +28,17 @@ public class UserController {
 
     @PostMapping
     @ResponseBody
-    public UserDtoRes save(@RequestBody @Valid UserDtoReq userDtoReq) {
+    public UserDtoRes save(@RequestBody UserDtoReq userDtoReq) {
         User user = userDtoReq.toUser();
         log.debug(String.valueOf(LogMessages.TRY_ADD), user);
         return userService.save1(user);
+    }
+
+    @PatchMapping(path = "/{id}", consumes = "application/json")
+    @ResponseBody
+    public UserDtoRes updateCustomer(@PathVariable Long id,
+                                     @RequestBody UserDtoReq userDtoReq) {
+        return userService.updateCustomer(id, userDtoReq);
     }
 
     @GetMapping
@@ -56,13 +63,6 @@ public class UserController {
     public UserDtoRes removeById(@PathVariable Long userId) {
         log.debug(String.valueOf(LogMessages.TRY_REMOVE_OBJECT), userId);
         return userService.removeById1(userId);
-    }
-
-    @PatchMapping(path = "/{id}", consumes = "application/json")
-    @ResponseBody
-    public UserDtoRes updateCustomer(@PathVariable Long id,
-                                     @RequestBody UserDtoReq userDtoReq) {
-        return userService.updateCustomer(id, userDtoReq);
     }
 
 

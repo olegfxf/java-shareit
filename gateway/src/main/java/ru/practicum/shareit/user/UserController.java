@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -13,38 +12,32 @@ import javax.validation.constraints.NotNull;
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
-@Slf4j
 public class UserController {
     private final UserClient userClient;
 
-    @PostMapping() //создание пользователя
-    public ResponseEntity<Object> createUser(@Validated() @RequestBody UserDto userDto) {
-        log.info("Post User {}", userDto);
+    @PostMapping()
+    public ResponseEntity<Object> save(@Validated() @RequestBody UserDto userDto) {
         return userClient.createUser(userDto);
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> updateUser(@Validated() @RequestBody UserDto userDto,
-                                             @Min(value = 1) @PathVariable Long userId) {
-        log.info("Patch User {}, userId {}", userDto, userId);
+    public ResponseEntity<Object> updateCustomer(@PathVariable Long userId,
+                                                 @RequestBody UserDto userDto) {
         return userClient.updateUser(userDto, userId);
     }
 
-    @GetMapping() //вывод списка пользователей
-    public ResponseEntity<Object> getUsers() {
-        log.info("Get Users");
+    @GetMapping()
+    public ResponseEntity<Object> getAll() {
         return userClient.getUsers();
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getUsersById(@NotNull @Min(value = 1) @PathVariable Long userId) {
-        log.info("Get UserById {}", userId);
+    public ResponseEntity<Object> getById(@NotNull @Min(value = 1) @PathVariable Long userId) {
         return userClient.getUserById(userId);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Object> deleteUser(@NotNull @Min(value = 1) @PathVariable Long userId) {
-        log.info("Delete User {}", userId);
+    public ResponseEntity<Object> removeById(@NotNull @Min(value = 1) @PathVariable Long userId) {
         return userClient.deleteUserById(userId);
     }
 }

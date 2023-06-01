@@ -1,22 +1,23 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
-import java.util.List;
+import javax.validation.constraints.Positive;
 
-@Data
+@Setter
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemDto {
+    String name;
 
-    private Long id;
+    String description;
 
-    private String name;
+    Boolean available;
 
-    private String description;
-
-    private Boolean available;
-
-    private Long requestId;
-
-    private List<CommentDto> comments;
+    @Positive
+    Long requestId;
 
 }
