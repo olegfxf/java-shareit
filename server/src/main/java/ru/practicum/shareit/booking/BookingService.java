@@ -31,7 +31,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-//@Transactional(readOnly = true)
 @Slf4j
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)

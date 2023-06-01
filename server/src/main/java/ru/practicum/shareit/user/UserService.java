@@ -45,9 +45,6 @@ public class UserService extends AbstractServiceImpl<User, UserRepository> {
 
 
     public UserDtoRes save1(User user) {
-//        if (userRepository.existsUserByEmail(user.getEmail()))
-//            throw new ValidationException(String.valueOf(HandlerMessages.CONFLICT));
-
         return new UserDtoRes(userRepository.save(user));
     }
 

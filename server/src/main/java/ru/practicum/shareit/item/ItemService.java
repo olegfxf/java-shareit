@@ -27,7 +27,6 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static ru.practicum.shareit.booking.model.Status.APPROVED;
 
-//@Transactional(readOnly = true)
 @Service
 @Slf4j
 public class ItemService extends AbstractServiceImpl<Item, ItemRepository> {
