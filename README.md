@@ -18,6 +18,6 @@ Java 11, Spring Boot, Maven, Git, REST Api, Lombok, SQL, H2, Jdbc, JdbcTemplate,
 * Получение пользователем всех его запросов, с возможностью фильтрации и сортировки.
 
 # Запуск приложения
-склонировать проект на свой компьютер
-выполнить команду mvn clean package
-выполнить команду docker-compose up
+* склонировать проект на свой компьютер
+* выполнить команду mvn clean package
+* выполнить команду docker-compose up
